@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pick the Lock Game</title>
+    <title>Unlock- Find your key game</title>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -192,7 +192,7 @@
         </label>
     </div>
     <div class="game-container">
-        <h1>Pick the Lock</h1>
+        <h1>Unlock- Find your key game</h1>
         <div class="lock-icon" id="lockIcon">🔒</div>
         <div id="pinContainers"></div>
         <button id="unlockButton">Try to Unlock</button>
@@ -260,7 +260,7 @@
             document.getElementById('lockIcon').textContent = isLocked ? '🔒' : '🔓';
             const gameStatus = document.getElementById('gameStatus');
             if (!isLocked) {
-                gameStatus.textContent = 'Lock Picked Successfully!';
+                gameStatus.textContent = 'UnLock Successfully!';
                 gameStatus.style.color = 'var(--success-color)';
             } else {
                 gameStatus.textContent = 'Keep trying!';
