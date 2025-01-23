@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Balloon Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #000, #002d5c);
+        }
+        .game-over, .game-start {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .game-over button, .game-start button {
+            background: #f04e4e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .game-over button:hover, .game-start button:hover {
+            background: #d04040;
+        }
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div class="score" id="scoreDisplay">Score: 0</div>
+<div class="game-over" id="gameOverScreen" style="display: none;">
+    <h1>Game Over</h1>
+    <p id="finalScore">Your Score: 0</p>
+    <button id="restartButton">Restart</button>
+</div>
+<div class="game-start" id="gameStartScreen">
+    <h1>Welcome to Neon Balloon Adventure!</h1>
+    <p>Control the neon balloon, avoid enemies, and collect power-ups!</p>
+    <button id="startButton">Start Game</button>
+</div>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const restartButton = document.getElementById('restartButton');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const finalScore = document.getElementById('finalScore');
+    const gameStartScreen = document.getElementById('gameStartScreen');
+    const startButton = document.getElementById('startButton');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let score = 0;
+    let isGameRunning = true;
+
+    const balloon = {
+        x: canvas.width / 2,
+        y: canvas.height - 100,
+        radius: 40,
+        color: 'cyan',
+        dx: 0,
+        speed: 5,
+        popping: false, // For explosion effect
+    };
+
+    const enemies = [];
+    const powerUps = [];
+    const explosions = [];
+    let level = 1;
+
+    function createEnemy() {
+        const size = Math.random() * 40 + 20;
+        const x = Math.random() * (canvas.width - size);
+        const type = ['circle', 'square', 'triangle'][Math.floor(Math.random() * 3)];
+        enemies.push({
+            x,
+            y: 0,
+            size,
+            type,
+            color: `hsl(${Math.random() * 360}, 80%, 60%)`,
+            speed: Math.random() * 2 + level * 0.5,
+        });
+    }
+
+    function createPowerUp() {
+        const size = 30;
+        const x = Math.random() * (canvas.width - size);
+        powerUps.push({
+            x,
+            y: 0,
+            size,
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+            speed: 1 + level * 0.2,
+        });
+    }
+
+    function drawBalloon() {
+        if (balloon.popping) return;
+
+        ctx.fillStyle = balloon.color;
+        ctx.beginPath();
+        ctx.arc(balloon.x, balloon.y, balloon.radius, 0, Math.PI * 2);
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = balloon.color;
+        ctx.fill();
+        ctx.closePath();
+
+        // Balloon string
+        ctx.strokeStyle = 'cyan';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(balloon.x, balloon.y + balloon.radius);
+        ctx.lineTo(balloon.x, balloon.y + balloon.radius + 30);
+        ctx.stroke();
+    }
+
+    function drawEnemies() {
+        enemies.forEach(enemy => {
+            ctx.fillStyle = enemy.color;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = enemy.color;
+
+            if (enemy.type === 'circle') {
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (enemy.type === 'square') {
+                ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+            } else if (enemy.type === 'triangle') {
+                ctx.beginPath();
+                ctx.moveTo(enemy.x, enemy.y + enemy.size);
+                ctx.lineTo(enemy.x + enemy.size / 2, enemy.y);
+                ctx.lineTo(enemy.x - enemy.size / 2, enemy.y + enemy.size);
+                ctx.closePath();
+                ctx.fill();
+            }
+        });
+    }
+
+    function drawPowerUps() {
+        powerUps.forEach(powerUp => {
+            ctx.fillStyle = powerUp.color;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = powerUp.color;
+
+            ctx.beginPath();
+            ctx.arc(powerUp.x, powerUp.y, powerUp.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    function drawExplosions() {
+        explosions.forEach((explosion, index) => {
+            ctx.fillStyle = `rgba(255, 0, 0, ${explosion.opacity})`;
+            ctx.beginPath();
+            ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+            ctx.fill();
+            explosion.radius += 5;
+            explosion.opacity -= 0.05;
+
+            if (explosion.opacity <= 0) explosions.splice(index, 1);
+        });
+    }
+
+    function moveBalloon() {
+        balloon.x += balloon.dx;
+
+        if (balloon.x - balloon.radius < 0) balloon.x = balloon.radius;
+        if (balloon.x + balloon.radius > canvas.width) balloon.x = canvas.width - balloon.radius;
+    }
+
+    function moveEnemies() {
+        enemies.forEach(enemy => {
+            enemy.y += enemy.speed;
+        });
+    }
+
+    function movePowerUps() {
+        powerUps.forEach(powerUp => {
+            powerUp.y += powerUp.speed;
+        });
+    }
+
+    function checkCollisions() {
+        enemies.forEach((enemy, index) => {
+            const dx = balloon.x - (enemy.x + enemy.size / 2);
+            const dy = balloon.y - (enemy.y + enemy.size / 2);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < balloon.radius + enemy.size / 2) {
+                createExplosion(balloon.x, balloon.y);
+                endGame();
+            }
+        });
+
+        powerUps.forEach((powerUp, index) => {
+            const dx = balloon.x - powerUp.x;
+            const dy = balloon.y - powerUp.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < balloon.radius + powerUp.size / 2) {
+                score += 50;
+                powerUps.splice(index, 1);
+            }
+        });
+    }
+
+    function createExplosion(x, y) {
+        explosions.push({ x, y, radius: 20, opacity: 1 });
+    }
+
+    function endGame() {
+        isGameRunning = false;
+        balloon.popping = true;
+        cancelAnimationFrame(animationFrameId);
+        gameOverScreen.style.display = 'block';
+        finalScore.textContent = `Your Score: ${score}`;
+    }
+
+    restartButton.addEventListener('click', () => {
+        enemies.length = 0;
+        powerUps.length = 0;
+        explosions.length = 0;
+        balloon.x = canvas.width / 2;
+        score = 0;
+        level = 1;
+        balloon.popping = false;
+        gameOverScreen.style.display = 'none';
+        isGameRunning = true;
+        gameLoop();
+    });
+
+    startButton.addEventListener('click', () => {
+        gameStartScreen.style.display = 'none';
+        isGameRunning = true;
+        gameLoop();
+    });
+
+    let animationFrameId;
+
+    function gameLoop() {
+        if (!isGameRunning) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        moveBalloon();
+        moveEnemies();
+        movePowerUps();
+        checkCollisions();
+
+        if (Math.random() < 0.02) createEnemy();
+        if (Math.random() < 0.01) createPowerUp();
+
+        drawBalloon();
+        drawEnemies();
+        drawPowerUps();
+        drawExplosions();
+
+        score += 1;
+        scoreDisplay.textContent = `Score: ${score}`;
+
+        if (score % 500 === 0) level += 1;
+
+        animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') balloon.dx = -balloon.speed;
+        if (e.key === 'ArrowRight') balloon.dx = balloon.speed;
+    });
+
+    window.addEventListener('keyup', () => {
+        balloon.dx = 0;
+    });
+</script>
+</body>
+</html>
