@@ -1,104 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Instagram Post Preview</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-/* Custom CSS styles for better presentation */
-.insta-post {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 20px;
-  margin-top: 20px;
-}
-.status-bar {
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  text-align: right;
-}
-.status-time {
-  margin-right: 10px;
-}
-.battery-container {
-  display: inline-block;
-  margin-left: 10px;
-}
-.battery {
-  width: 20px;
-  height: 10px;
-  background-color: #fff;
-  border-radius: 3px;
-  position: relative;
-}
-.battery-level {
-  background-color: #000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%; /* Adjust based on battery percentage */
-  height: 100%;
-}
-.instapost-android-header {
-  background-color: #fff;
-  padding: 10px;
-  text-align: center;
-}
-.insta-ios-header {
-  background-color: #fff;
-  padding: 10px;
-  text-align: center;
-}
-.ios-header {
-  background-color: #fff;
-  padding: 5px;
-  text-align: right;
-}
-.whatsapp-iphone-status-bar {
-  background-color: #fff;
-}
-.iphone-moblie-network {
-  display: inline-block;
-  margin-right: 5px;
-}
-.iphone-time {
-  margin-right: 10px;
-}
-.iphone-battery {
-  width: 18px;
-  height: 8px;
-  background-color: #fff;
-  border-radius: 2px;
-  position: relative;
-}
-.iphone-battery-percentage {
-  background-color: #000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%; /* Adjust based on battery percentage */
-  height: 100%;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Multiple URLs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    textarea {
+      width: 80%;
+      height: 200px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: gray;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <div class="insta-post">
-        <div class="insta-android-header"> 
-          <img src="https://fakedetail.com/assets/images/insta-header-android.png" alt="instagram-post-header"> 
-        </div>
-        <div class="insta-ios-header"> 
-          <img src="https://fakedetail.com/assets/images/insta-header-ios.png" alt="instagram-post-header"> 
-        </div>
-      </div>
-    </div>
+  <h1>Open Multiple URLs</h1>
+  <textarea id="urlInput" placeholder="Enter one URL per line"></textarea><br>
+  <button onclick="openUrls()">Open All</button>
+  <button onclick="clearUrls()">Clear</button>
+  <div class="info">
+    <p>Paste URLs line by line. Make sure they start with http:// or https://.</p>
   </div>
-</div>
+
+  <script>
+    function openUrls() {
+      const input = document.getElementById('urlInput').value.trim();
+      const urls = input.split('\n').filter(url => url.trim() !== '');
+
+      urls.forEach(url => {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          alert(`Invalid URL skipped: ${url}`);
+          return;
+        }
+        window.open(url, '_blank');
+      });
+    }
+
+    function clearUrls() {
+      document.getElementById('urlInput').value = '';
+    }
+  </script>
 </body>
 </html>
