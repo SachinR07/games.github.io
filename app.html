@@ -3,57 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Open Multiple URLs</title>
+  <title>Notepad App</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       text-align: center;
+      background-color: #f4f4f9;
     }
     textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 10px;
+      width: 90%;
+      height: 300px;
+      margin-top: 20px;
       font-size: 16px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
     button {
       padding: 10px 20px;
-      margin: 5px;
+      margin: 10px;
       font-size: 16px;
       cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    .save-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .clear-btn {
+      background-color: #f44336;
+      color: white;
     }
     .info {
       margin-top: 20px;
+      color: #555;
       font-size: 14px;
-      color: gray;
     }
   </style>
 </head>
 <body>
-  <h1>Open Multiple URLs</h1>
-  <textarea id="urlInput" placeholder="Enter one URL per line"></textarea><br>
-  <button onclick="openUrls()">Open All</button>
-  <button onclick="clearUrls()">Clear</button>
+  <h1>Notepad App</h1>
+  <textarea id="notepad" placeholder="Start typing your notes here..."></textarea><br>
+  <button class="save-btn" onclick="saveNotes()">Save</button>
+  <button class="clear-btn" onclick="clearNotes()">Clear</button>
   <div class="info">
-    <p>Paste URLs line by line. Make sure they start with http:// or https://.</p>
+    <p>Your notes are automatically saved in your browser. Refresh the page to test it!</p>
   </div>
 
   <script>
-    function openUrls() {
-      const input = document.getElementById('urlInput').value.trim();
-      const urls = input.split('\n').filter(url => url.trim() !== '');
+    // Load saved notes when the app starts
+    window.onload = function() {
+      const savedNotes = localStorage.getItem('notepadContent');
+      if (savedNotes) {
+        document.getElementById('notepad').value = savedNotes;
+      }
+    };
 
-      urls.forEach(url => {
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          alert(`Invalid URL skipped: ${url}`);
-          return;
-        }
-        window.open(url, '_blank');
-      });
+    // Save notes to localStorage
+    function saveNotes() {
+      const notes = document.getElementById('notepad').value;
+      localStorage.setItem('notepadContent', notes);
+      alert('Notes saved successfully!');
     }
 
-    function clearUrls() {
-      document.getElementById('urlInput').value = '';
+    // Clear notes both from the textarea and localStorage
+    function clearNotes() {
+      if (confirm('Are you sure you want to clear all notes?')) {
+        document.getElementById('notepad').value = '';
+        localStorage.removeItem('notepadContent');
+        alert('Notes cleared!');
+      }
     }
   </script>
 </body>
