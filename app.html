@@ -80,65 +80,66 @@
     <div class="result" id="result"></div>
   </div>
 
-  <script>
-    function calculateOptionValue() {
-      // Fetch input values
-      const S = parseFloat(document.getElementById('stock-price').value);
-      const E = parseFloat(document.getElementById('expected-price').value);
-      const K = parseFloat(document.getElementById('strike-price').value);
-      const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
-      const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
-      const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+<script>
+function calculateOptionValue() {
+  // Fetch input values
+  const S = parseFloat(document.getElementById('stock-price').value);
+  const E = parseFloat(document.getElementById('expected-price').value);
+  const K = parseFloat(document.getElementById('strike-price').value);
+  const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
+  const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
+  const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
 
-      if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r)) {
-        alert('Please fill in all fields with valid numbers!');
-        return;
-      }
+  if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r)) {
+    alert('Please fill in all fields with valid numbers!');
+    return;
+  }
 
-      // Calculate Volatility (σ) from Expected Price of Stock
-      const σ = Math.log(E / S) / Math.sqrt(T);
+  // Adjusted Volatility Calculation
+  const scaledT = T * 12; // Convert time to months
+  const σ = Math.log(E / S) / Math.sqrt(scaledT);
 
-      if (σ <= 0) {
-        alert('Expected price must be greater than the current stock price!');
-        return;
-      }
+  if (σ <= 0) {
+    alert('Expected price must be greater than the current stock price!');
+    return;
+  }
 
-      // Calculate d1 and d2 for Black-Scholes model
-      const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
-      const d2 = d1 - σ * Math.sqrt(T);
+  // Calculate d1 and d2 for Black-Scholes model
+  const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
+  const d2 = d1 - σ * Math.sqrt(T);
 
-      // Standard normal cumulative distribution function (N(x))
-      function N(x) {
-        const t = 1 / (1 + 0.2316419 * Math.abs(x));
-        const d = 0.3989422804014337 * Math.exp(-x * x / 2);
-        const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
-        return x >= 0 ? 1 - n : n;
-      }
+  // Standard normal cumulative distribution function (N(x))
+  function N(x) {
+    const t = 1 / (1 + 0.2316419 * Math.abs(x));
+    const d = 0.3989422804014337 * Math.exp(-x * x / 2);
+    const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
+    return x >= 0 ? 1 - n : n;
+  }
 
-      // Calculate call and put option prices
-      const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
-      const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
+  // Calculate call and put option prices
+  const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
+  const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
 
-      // Display results
-      let resultHTML = `
-        <p>Calculated Call Option Price: $${callPrice.toFixed(2)}</p>
-        <p>Calculated Put Option Price: $${putPrice.toFixed(2)}</p>
-        <p>Volatility (σ) Calculated: ${(σ * 100).toFixed(2)}%</p>
-      `;
+  // Display results
+  let resultHTML = `
+    <p>Calculated Call Option Price: $${callPrice.toFixed(2)}</p>
+    <p>Calculated Put Option Price: $${putPrice.toFixed(2)}</p>
+    <p>Adjusted Volatility (σ): ${(σ * 100).toFixed(2)}%</p>
+  `;
 
-      // Compare with current option price if provided
-      if (!isNaN(currentOptionPrice)) {
-        const callDifference = (currentOptionPrice - callPrice).toFixed(2);
-        const putDifference = (currentOptionPrice - putPrice).toFixed(2);
-        resultHTML += `
-          <p>Current Option Price: $${currentOptionPrice.toFixed(2)}</p>
-          <p>Difference with Call Price: $${callDifference}</p>
-          <p>Difference with Put Price: $${putDifference}</p>
-        `;
-      }
+  // Compare with current option price if provided
+  if (!isNaN(currentOptionPrice)) {
+    const callDifference = (currentOptionPrice - callPrice).toFixed(2);
+    const putDifference = (currentOptionPrice - putPrice).toFixed(2);
+    resultHTML += `
+      <p>Current Option Price: $${currentOptionPrice.toFixed(2)}</p>
+      <p>Difference with Call Price: $${callDifference}</p>
+      <p>Difference with Put Price: $${putDifference}</p>
+    `;
+  }
 
-      document.getElementById('result').innerHTML = resultHTML;
-    }
-  </script>
+  document.getElementById('result').innerHTML = resultHTML;
+}
+</script>
 </body>
 </html>
