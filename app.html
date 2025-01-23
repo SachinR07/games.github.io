@@ -1,145 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Option Value Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f4f4f9;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      text-align: center;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 18px;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Value Calculator</title>
 </head>
 <body>
-  <div class="container">
     <h1>Option Value Calculator</h1>
-    <form id="calculator-form">
-      <label for="stock-price">Current Stock Price (S):</label>
-      <input type="number" id="stock-price" step="0.01" required>
+    <form id="option-form">
+        <label for="stock-price">Underlying Stock Price (₹):</label>
+        <input type="number" id="stock-price" step="0.01"><br><br>
 
-      <label for="expected-price">Expected Stock Price:</label>
-      <input type="number" id="expected-price" step="0.01" required>
+        <label for="strike-price">Strike Price (₹):</label>
+        <input type="number" id="strike-price" step="0.01"><br><br>
 
-      <label for="strike-price">Strike Price (K):</label>
-      <input type="number" id="strike-price" step="0.01" required>
+        <label for="expected-price">Expected Price of Stock (₹):</label>
+        <input type="number" id="expected-price" step="0.01"><br><br>
 
-      <label for="time">Time to Maturity (Days) (T):</label>
-      <input type="number" id="time" required>
+        <label for="time">Time to Maturity (Days):</label>
+        <input type="number" id="time"><br><br>
 
-      <label for="risk-free-rate">Risk-Free Rate (%) (r):</label>
-      <input type="number" id="risk-free-rate" step="0.01" required>
+        <label for="risk-free-rate">Risk-Free Interest Rate (%):</label>
+        <input type="number" id="risk-free-rate" step="0.01"><br><br>
 
-      <label for="current-option-price">Current Option Price:</label>
-      <input type="number" id="current-option-price" step="0.01" placeholder="Enter market price of the option">
+        <label for="call-option-price">Current Call Option Price (₹):</label>
+        <input type="number" id="call-option-price" step="0.01"><br><br>
 
-      <button type="button" onclick="calculateOptionValue()">Calculate</button>
+        <label for="put-option-price">Current Put Option Price (₹):</label>
+        <input type="number" id="put-option-price" step="0.01"><br><br>
+
+        <button type="button" onclick="calculateOptionValue()">Calculate</button>
     </form>
-    <div class="result" id="result"></div>
-  </div>
 
-<script>
-function calculateOptionValue() {
-  // Fetch input values
-  const S = parseFloat(document.getElementById('stock-price').value);
-  const E = parseFloat(document.getElementById('expected-price').value);
-  const K = parseFloat(document.getElementById('strike-price').value);
-  const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
-  const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
-  const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+    <h2>Results</h2>
+    <div id="result"></div>
 
-  if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r)) {
-    alert('Please fill in all fields with valid numbers!');
-    return;
-  }
+    <script>
+        function calculateOptionValue() {
+            // Fetch input values
+            const S = parseFloat(document.getElementById('stock-price').value);
+            const K = parseFloat(document.getElementById('strike-price').value);
+            const E = parseFloat(document.getElementById('expected-price').value);
+            const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
+            const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
+            const currentCallPrice = parseFloat(document.getElementById('call-option-price').value);
+            const currentPutPrice = parseFloat(document.getElementById('put-option-price').value);
 
-  // Adjusted Volatility Calculation
-  const scaledT = T * 12; // Convert time to months
-  const σ = Math.log(E / S) / Math.sqrt(scaledT);
+            if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r) || isNaN(currentCallPrice) || isNaN(currentPutPrice)) {
+                alert('Please fill in all fields with valid numbers!');
+                return;
+            }
 
-  if (σ <= 0) {
-    alert('Expected price must be greater than the current stock price!');
-    return;
-  }
+            // Volatility Calculation
+            const σ = Math.log(E / S) / Math.sqrt(T);
 
-  // Calculate d1 and d2 for Black-Scholes model
-  const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
-  const d2 = d1 - σ * Math.sqrt(T);
+            if (σ <= 0) {
+                alert('Expected price must be greater than the current stock price!');
+                return;
+            }
 
-  // Standard normal cumulative distribution function (N(x))
-  function N(x) {
-    const t = 1 / (1 + 0.2316419 * Math.abs(x));
-    const d = 0.3989422804014337 * Math.exp(-x * x / 2);
-    const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
-    return x >= 0 ? 1 - n : n;
-  }
+            // Calculate d1 and d2 for Black-Scholes model
+            const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
+            const d2 = d1 - σ * Math.sqrt(T);
 
-  // Calculate call and put option prices
-  const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
-  const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
+            // Standard normal cumulative distribution function (N(x))
+            function N(x) {
+                const t = 1 / (1 + 0.2316419 * Math.abs(x));
+                const d = 0.3989422804014337 * Math.exp(-x * x / 2);
+                const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
+                return x >= 0 ? 1 - n : n;
+            }
 
-  // Display results
-  let resultHTML = `
-    <p>Calculated Call Option Price: $${callPrice.toFixed(2)}</p>
-    <p>Calculated Put Option Price: $${putPrice.toFixed(2)}</p>
-    <p>Adjusted Volatility (σ): ${(σ * 100).toFixed(2)}%</p>
-  `;
+            // Calculate theoretical Call and Put Option Prices
+            const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
+            const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
 
-  // Compare with current option price if provided
-  if (!isNaN(currentOptionPrice)) {
-    const callDifference = (currentOptionPrice - callPrice).toFixed(2);
-    const putDifference = (currentOptionPrice - putPrice).toFixed(2);
-    resultHTML += `
-      <p>Current Option Price: $${currentOptionPrice.toFixed(2)}</p>
-      <p>Difference with Call Price: $${callDifference}</p>
-      <p>Difference with Put Price: $${putDifference}</p>
-    `;
-  }
-
-  document.getElementById('result').innerHTML = resultHTML;
-}
-</script>
+            // Display results
+            document.getElementById('result').innerHTML = `
+                <p><strong>Calculated Call Option (CE) Price:</strong> ₹${callPrice.toFixed(2)}</p>
+                <p><strong>Current Call Option Price (CE):</strong> ₹${currentCallPrice.toFixed(2)}</p>
+                <p><strong>Calculated Put Option (PE) Price:</strong> ₹${putPrice.toFixed(2)}</p>
+                <p><strong>Current Put Option Price (PE):</strong> ₹${currentPutPrice.toFixed(2)}</p>
+                <p><strong>Calculated Volatility (σ):</strong> ${(σ * 100).toFixed(2)}%</p>
+            `;
+        }
+    </script>
 </body>
 </html>
