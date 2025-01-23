@@ -66,8 +66,8 @@
       <label for="volatility">Volatility (%) (σ):</label>
       <input type="number" id="volatility" step="0.01" required>
 
-      <label for="time">Time to Maturity (Years) (T):</label>
-      <input type="number" id="time" step="0.01" required>
+      <label for="time">Time to Maturity (Days) (T):</label>
+      <input type="number" id="time" required>
 
       <label for="risk-free-rate">Risk-Free Rate (%) (r):</label>
       <input type="number" id="risk-free-rate" step="0.01" required>
@@ -83,7 +83,7 @@
       const S = parseFloat(document.getElementById('stock-price').value);
       const K = parseFloat(document.getElementById('strike-price').value);
       const σ = parseFloat(document.getElementById('volatility').value) / 100;
-      const T = parseFloat(document.getElementById('time').value);
+      const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
       const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
 
       if (isNaN(S) || isNaN(K) || isNaN(σ) || isNaN(T) || isNaN(r)) {
@@ -95,9 +95,12 @@
       const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
       const d2 = d1 - σ * Math.sqrt(T);
 
-      // Standard normal distribution function
+      // Standard normal cumulative distribution function (N(x))
       function N(x) {
-        return (1.0 + Math.erf(x / Math.sqrt(2.0))) / 2.0;
+        const t = 1 / (1 + 0.2316419 * Math.abs(x));
+        const d = 0.3989422804014337 * Math.exp(-x * x / 2);
+        const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
+        return x >= 0 ? 1 - n : n;
       }
 
       // Calculate call and put option prices
