@@ -57,14 +57,14 @@
   <div class="container">
     <h1>Option Value Calculator</h1>
     <form id="calculator-form">
-      <label for="stock-price">Stock Price (S):</label>
+      <label for="stock-price">Current Stock Price (S):</label>
       <input type="number" id="stock-price" step="0.01" required>
+
+      <label for="expected-price">Expected Stock Price:</label>
+      <input type="number" id="expected-price" step="0.01" required>
 
       <label for="strike-price">Strike Price (K):</label>
       <input type="number" id="strike-price" step="0.01" required>
-
-      <label for="volatility">Volatility (%) (σ):</label>
-      <input type="number" id="volatility" step="0.01" required>
 
       <label for="time">Time to Maturity (Days) (T):</label>
       <input type="number" id="time" required>
@@ -84,14 +84,22 @@
     function calculateOptionValue() {
       // Fetch input values
       const S = parseFloat(document.getElementById('stock-price').value);
+      const E = parseFloat(document.getElementById('expected-price').value);
       const K = parseFloat(document.getElementById('strike-price').value);
-      const σ = parseFloat(document.getElementById('volatility').value) / 100;
       const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
       const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
       const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
 
-      if (isNaN(S) || isNaN(K) || isNaN(σ) || isNaN(T) || isNaN(r)) {
+      if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r)) {
         alert('Please fill in all fields with valid numbers!');
+        return;
+      }
+
+      // Calculate Volatility (σ) from Expected Price of Stock
+      const σ = Math.log(E / S) / Math.sqrt(T);
+
+      if (σ <= 0) {
+        alert('Expected price must be greater than the current stock price!');
         return;
       }
 
@@ -115,6 +123,7 @@
       let resultHTML = `
         <p>Calculated Call Option Price: $${callPrice.toFixed(2)}</p>
         <p>Calculated Put Option Price: $${putPrice.toFixed(2)}</p>
+        <p>Volatility (σ) Calculated: ${(σ * 100).toFixed(2)}%</p>
       `;
 
       // Compare with current option price if provided
