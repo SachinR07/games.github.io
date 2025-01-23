@@ -8,26 +8,35 @@
 <body>
     <h1>Option Value Calculator</h1>
     <form id="option-form">
-        <label for="stock-price">Underlying Stock Price (₹):</label>
-        <input type="number" id="stock-price" step="0.01"><br><br>
+        <label for="option-type">Select Option Type:</label>
+        <select id="option-type">
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+        </select><br><br>
 
-        <label for="strike-price">Strike Price (₹):</label>
-        <input type="number" id="strike-price" step="0.01"><br><br>
+        <label for="strike-price">Option Strike Price (₹):</label>
+        <input type="number" id="strike-price" step="0.01" required><br><br>
+
+        <label for="current-option-price">Current Option Price (₹):</label>
+        <input type="number" id="current-option-price" step="0.01" required><br><br>
+
+        <label for="trade-date">Trade Date (DD/MM/YYYY):</label>
+        <input type="text" id="trade-date" placeholder="DD/MM/YYYY" required><br><br>
+
+        <label for="exit-date">Expected Exit Date (DD/MM/YYYY):</label>
+        <input type="text" id="exit-date" placeholder="DD/MM/YYYY" required><br><br>
+
+        <label for="expiry-date">Option Expiry Date (DD/MM/YYYY):</label>
+        <input type="text" id="expiry-date" placeholder="DD/MM/YYYY" required><br><br>
+
+        <label for="stock-price">Underlying Stock Price (₹):</label>
+        <input type="number" id="stock-price" step="0.01" required><br><br>
 
         <label for="expected-price">Expected Price of Stock (₹):</label>
-        <input type="number" id="expected-price" step="0.01"><br><br>
-
-        <label for="time">Time to Maturity (Days):</label>
-        <input type="number" id="time"><br><br>
+        <input type="number" id="expected-price" step="0.01" required><br><br>
 
         <label for="risk-free-rate">Risk-Free Interest Rate (%):</label>
-        <input type="number" id="risk-free-rate" step="0.01"><br><br>
-
-        <label for="call-option-price">Current Call Option Price (₹):</label>
-        <input type="number" id="call-option-price" step="0.01"><br><br>
-
-        <label for="put-option-price">Current Put Option Price (₹):</label>
-        <input type="number" id="put-option-price" step="0.01"><br><br>
+        <input type="number" id="risk-free-rate" step="0.01" required><br><br>
 
         <button type="button" onclick="calculateOptionValue()">Calculate</button>
     </form>
@@ -38,20 +47,33 @@
     <script>
         function calculateOptionValue() {
             // Fetch input values
-            const S = parseFloat(document.getElementById('stock-price').value);
+            const optionType = document.getElementById('option-type').value;
             const K = parseFloat(document.getElementById('strike-price').value);
+            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+            const tradeDate = document.getElementById('trade-date').value;
+            const exitDate = document.getElementById('exit-date').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            const S = parseFloat(document.getElementById('stock-price').value);
             const E = parseFloat(document.getElementById('expected-price').value);
-            const T = parseFloat(document.getElementById('time').value) / 365; // Convert days to years
             const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
-            const currentCallPrice = parseFloat(document.getElementById('call-option-price').value);
-            const currentPutPrice = parseFloat(document.getElementById('put-option-price').value);
 
-            if (isNaN(S) || isNaN(E) || isNaN(K) || isNaN(T) || isNaN(r) || isNaN(currentCallPrice) || isNaN(currentPutPrice)) {
+            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(r)) {
                 alert('Please fill in all fields with valid numbers!');
                 return;
             }
 
-            // Volatility Calculation
+            // Calculate the number of days to expiry and time to expiry in years
+            const tradeDateObj = new Date(tradeDate.split('/')[2], tradeDate.split('/')[1] - 1, tradeDate.split('/')[0]);
+            const expiryDateObj = new Date(expiryDate.split('/')[2], expiryDate.split('/')[1] - 1, expiryDate.split('/')[0]);
+            const daysToExpiry = (expiryDateObj - tradeDateObj) / (1000 * 3600 * 24);
+            const T = daysToExpiry / 365; // Time to expiry in years
+
+            if (T <= 0) {
+                alert('Expiry date must be after the trade date!');
+                return;
+            }
+
+            // Volatility Calculation (based on expected price movement)
             const σ = Math.log(E / S) / Math.sqrt(T);
 
             if (σ <= 0) {
@@ -71,18 +93,20 @@
                 return x >= 0 ? 1 - n : n;
             }
 
-            // Calculate theoretical Call and Put Option Prices
+            // Calculate Call and Put Option Prices
             const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
             const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
 
             // Display results
-            document.getElementById('result').innerHTML = `
-                <p><strong>Calculated Call Option (CE) Price:</strong> ₹${callPrice.toFixed(2)}</p>
-                <p><strong>Current Call Option Price (CE):</strong> ₹${currentCallPrice.toFixed(2)}</p>
-                <p><strong>Calculated Put Option (PE) Price:</strong> ₹${putPrice.toFixed(2)}</p>
-                <p><strong>Current Put Option Price (PE):</strong> ₹${currentPutPrice.toFixed(2)}</p>
+            let resultMessage = `
+                <p><strong>Option Type:</strong> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}</p>
+                <p><strong>Calculated Option Price (CE or PE):</strong> ₹${optionType === 'call' ? callPrice.toFixed(2) : putPrice.toFixed(2)}</p>
+                <p><strong>Current Option Price:</strong> ₹${currentOptionPrice.toFixed(2)}</p>
                 <p><strong>Calculated Volatility (σ):</strong> ${(σ * 100).toFixed(2)}%</p>
+                <p><strong>Time to Expiry:</strong> ${daysToExpiry} days</p>
             `;
+            
+            document.getElementById('result').innerHTML = resultMessage;
         }
     </script>
 </body>
