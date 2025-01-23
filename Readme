@@ -1,1 +1,15 @@
-Picture 
+Notepad App
+A simple, lightweight HTML5-based notepad app that lets you type, save, and manage notes directly in your browser. Notes are stored locally using localStorage, so they persist even after refreshing the page.
+
+Features:
+Type and edit notes in a user-friendly text area.
+Save notes locally in the browser with one click.
+Automatically loads saved notes on page reload.
+Clear notes easily with a confirmation prompt.
+How to Use:
+Clone or download the repository.
+Open the notepad.html file in any web browser.
+Start typing, save your notes, and enjoy!
+Future Enhancements (Optional):
+Export and import notes as text files.
+Add dark mode for better usability.
