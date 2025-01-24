@@ -110,73 +110,76 @@
     </div>
 
     <script>
-        function calculateOptionValue() {
-            const optionType = document.getElementById('option-type').value;
-            const K = parseFloat(document.getElementById('strike-price').value);
-            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
-            const tradeDate = document.getElementById('trade-date').value;
-            const exitDate = document.getElementById('exit-date').value;
-            const expiryDate = document.getElementById('expiry-date').value;
-            const S = parseFloat(document.getElementById('stock-price').value);
-            const E = parseFloat(document.getElementById('expected-price').value);
-            const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
+    function calculateOptionAtExit() {
+    const optionType = document.getElementById('option-type').value;
+    const K = parseFloat(document.getElementById('strike-price').value);
+    const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+    const tradeDate = document.getElementById('trade-date').value;
+    const exitDate = document.getElementById('exit-date').value;
+    const expiryDate = document.getElementById('expiry-date').value;
+    const S = parseFloat(document.getElementById('stock-price').value);
+    const E = parseFloat(document.getElementById('expected-price').value);
+    const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
 
-            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(r)) {
-                document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
-                return;
-            }
+    if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(r)) {
+        document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
+        return;
+    }
 
-            const tradeDateObj = new Date(tradeDate.split('/')[2], tradeDate.split('/')[1] - 1, tradeDate.split('/')[0]);
-            const expiryDateObj = new Date(expiryDate.split('/')[2], expiryDate.split('/')[1] - 1, expiryDate.split('/')[0]);
-            const daysToExpiry = (expiryDateObj - tradeDateObj) / (1000 * 3600 * 24);
-            const T = daysToExpiry / 365;
+    const tradeDateObj = new Date(tradeDate.split('/')[2], tradeDate.split('/')[1] - 1, tradeDate.split('/')[0]);
+    const exitDateObj = new Date(exitDate.split('/')[2], exitDate.split('/')[1] - 1, exitDate.split('/')[0]);
+    const expiryDateObj = new Date(expiryDate.split('/')[2], expiryDate.split('/')[1] - 1, expiryDate.split('/')[0]);
 
-            if (T <= 0) {
-                document.getElementById('result').innerHTML = '<p class="error">Expiry date must be after the trade date!</p>';
-                return;
-            }
+    const daysToExit = (exitDateObj - tradeDateObj) / (1000 * 3600 * 24);
+    const daysToExpiry = (expiryDateObj - tradeDateObj) / (1000 * 3600 * 24);
 
-            const σ = Math.log(E / S) / Math.sqrt(T);
+    const T_exit = daysToExit / 365; // Time to exit in years
+    const T_expiry = daysToExpiry / 365; // Time to expiry in years
 
-            if (σ <= 0) {
-                document.getElementById('result').innerHTML = '<p class="error">Expected price must be greater than the current stock price!</p>';
-                return;
-            }
+    if (T_exit <= 0 || T_expiry <= 0) {
+        document.getElementById('result').innerHTML = '<p class="error">Dates must be in the correct order!</p>';
+        return;
+    }
 
-            const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T) / (σ * Math.sqrt(T));
-            const d2 = d1 - σ * Math.sqrt(T);
+    // Volatility approximation
+    const σ = Math.log(E / S) / Math.sqrt(T_expiry);
 
-            function N(x) {
-                const t = 1 / (1 + 0.2316419 * Math.abs(x));
-                const d = 0.3989422804014337 * Math.exp(-x * x / 2);
-                const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
-                return x >= 0 ? 1 - n : n;
-            }
+    if (σ <= 0) {
+        document.getElementById('result').innerHTML = '<p class="error">Expected price must be greater than the current stock price!</p>';
+        return;
+    }
 
-            const callPrice = S * N(d1) - K * Math.exp(-r * T) * N(d2);
-            const putPrice = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
+    const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T_exit) / (σ * Math.sqrt(T_exit));
+    const d2 = d1 - σ * Math.sqrt(T_exit);
 
-            let resultMessage = `
-                <div class="result-item">
-                    <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
-                </div>
-                <div class="result-item">
-                    <span>Calculated Option Price (CE or PE):</span> ₹${optionType === 'call' ? callPrice.toFixed(2) : putPrice.toFixed(2)}
-                </div>
-                <div class="result-item">
-                    <span>Current Option Price:</span> ₹${currentOptionPrice.toFixed(2)}
-                </div>
-                <div class="result-item">
-                    <span>Calculated Volatility (σ):</span> ${(σ * 100).toFixed(2)}%
-                </div>
-                <div class="result-item">
-                    <span>Time to Expiry:</span> ${daysToExpiry} days
-                </div>
-            `;
-            
-            document.getElementById('result').innerHTML = resultMessage;
-        }
-    </script>
+    function N(x) {
+        const t = 1 / (1 + 0.2316419 * Math.abs(x));
+        const d = 0.3989422804014337 * Math.exp(-x * x / 2);
+        const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
+        return x >= 0 ? 1 - n : n;
+    }
+
+    const callPrice = S * N(d1) - K * Math.exp(-r * T_exit) * N(d2);
+    const putPrice = K * Math.exp(-r * T_exit) * N(-d2) - S * N(-d1);
+
+    let resultMessage = `
+        <div class="result-item">
+            <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
+        </div>
+        <div class="result-item">
+            <span>Calculated Option Price at Exit (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${optionType === 'call' ? callPrice.toFixed(2) : putPrice.toFixed(2)}
+        </div>
+        <div class="result-item">
+            <span>Time to Exit:</span> ${daysToExit} days (${T_exit.toFixed(2)} years)
+        </div>
+        <div class="result-item">
+            <span>Calculated Volatility (σ):</span> ${(σ * 100).toFixed(2)}%
+        </div>
+    `;
+
+    document.getElementById('result').innerHTML = resultMessage;
+}
+</script>
 
 </body>
 </html>
