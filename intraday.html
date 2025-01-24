@@ -112,51 +112,51 @@
 
     <script>
         function calculateIntradayEntryPrice() {
-            const optionType = document.getElementById('option-type').value;
-            const K = parseFloat(document.getElementById('strike-price').value);
-            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
-            const S = parseFloat(document.getElementById('stock-price').value);
-            const E = parseFloat(document.getElementById('expected-price').value);
-            const delta = parseFloat(document.getElementById('delta').value);
-            const theta = parseFloat(document.getElementById('theta').value);
-            const gamma = parseFloat(document.getElementById('gamma').value);
+    const optionType = document.getElementById('option-type').value;
+    const K = parseFloat(document.getElementById('strike-price').value);
+    const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+    const S = parseFloat(document.getElementById('stock-price').value);
+    const E = parseFloat(document.getElementById('expected-price').value);
+    const delta = parseFloat(document.getElementById('delta').value);
+    const theta = parseFloat(document.getElementById('theta').value);
+    const gamma = parseFloat(document.getElementById('gamma').value);
 
-            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta) || isNaN(gamma)) {
-                document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
-                return;
-            }
+    if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta) || isNaN(gamma)) {
+        document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
+        return;
+    }
 
-            // Time-based adjustment factor (assuming intraday time in hours)
-            const expectedTime = document.getElementById('expected-time').value;
-            const [hours, minutes] = expectedTime.split(':').map(Number);
-            const timeToEntryInHours = hours + minutes / 60;
+    // Get the expected time input
+    const expectedTime = document.getElementById('expected-time').value;
+    const [hours, minutes] = expectedTime.split(':').map(Number);
+    const timeToEntryInHours = hours + minutes / 60;
 
-            if (timeToEntryInHours <= 0) {
-                document.getElementById('result').innerHTML = '<p class="error">Expected Entry Time must be in the future!</p>';
-                return;
-            }
+    if (timeToEntryInHours <= 0) {
+        document.getElementById('result').innerHTML = '<p class="error">Expected Entry Time must be in the future!</p>';
+        return;
+    }
 
-            // Adjust the option price based on Delta, Theta, and Gamma
-            const priceChangeDueToDelta = delta * (E - S);
-            const priceChangeDueToGamma = 0.5 * gamma * Math.pow(E - S, 2);
-            const priceChangeDueToTheta = theta * timeToEntryInHours;
+    // Calculate price adjustments
+    const deltaAdjustment = delta * (E - S);
+    const gammaAdjustment = 0.5 * gamma * Math.pow(E - S, 2);
+    const thetaAdjustment = theta * timeToEntryInHours;
 
-            const adjustedOptionPrice = currentOptionPrice + priceChangeDueToDelta + priceChangeDueToGamma - priceChangeDueToTheta;
+    const adjustedOptionPrice = currentOptionPrice + deltaAdjustment + gammaAdjustment - thetaAdjustment;
 
-            let resultMessage = `
-                <div class="result-item">
-                    <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
-                </div>
-                <div class="result-item">
-                    <span>Calculated Entry Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
-                </div>
-                <div class="result-item">
-                    <span>Time to Entry:</span> ${timeToEntryInHours.toFixed(2)} hours
-                </div>
-            `;
+    let resultMessage = `
+        <div class="result-item">
+            <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
+        </div>
+        <div class="result-item">
+            <span>Calculated Entry Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
+        </div>
+        <div class="result-item">
+            <span>Time to Entry:</span> ${timeToEntryInHours.toFixed(2)} hours
+        </div>
+    `;
 
-            document.getElementById('result').innerHTML = resultMessage;
-        }
+    document.getElementById('result').innerHTML = resultMessage;
+}
     </script>
 </body>
 </html>
