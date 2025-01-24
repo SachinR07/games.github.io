@@ -110,63 +110,76 @@
         <div id="result" class="result"></div>
     </div>
 
-    <script>
-        // Set the current date in the form
-        document.getElementById('current-date').value = new Date().toLocaleDateString('en-GB');
+<script>
+    // Function to check if a date is a weekend
+    function isWeekend(date) {
+        const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+        return day === 0 || day === 6;
+    }
 
-        function updateExpectedPriceLabel() {
-            const optionType = document.getElementById('option-type').value;
-            const label = document.getElementById('expected-price-label');
-            label.textContent = optionType === 'call'
-                ? 'Expected Price of Stock (₹) (Lower than current price):'
-                : 'Expected Price of Stock (₹) (Higher than current price):';
+    // Function to calculate working days between two dates
+    function calculateWorkingDays(currentDate, entryDateObj) {
+        let workingDays = 0;
+        let date = new Date(currentDate);
+
+        while (date < entryDateObj) {
+            // If the date is not a weekend, count it as a working day
+            if (!isWeekend(date)) {
+                workingDays++;
+            }
+            // Move to the next day
+            date.setDate(date.getDate() + 1);
         }
 
-        function calculateEntryPrice() {
-            const optionType = document.getElementById('option-type').value;
-            const K = parseFloat(document.getElementById('strike-price').value);
-            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
-            const entryDate = document.getElementById('entry-date').value;
-            const S = parseFloat(document.getElementById('stock-price').value);
-            const E = parseFloat(document.getElementById('expected-price').value);
-            const delta = parseFloat(document.getElementById('delta').value);
-            const theta = parseFloat(document.getElementById('theta').value);
+        return workingDays;
+    }
 
-            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta)) {
-                document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
-                return;
-            }
+    function calculateEntryPrice() {
+        const optionType = document.getElementById('option-type').value;
+        const K = parseFloat(document.getElementById('strike-price').value);
+        const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+        const entryDate = document.getElementById('entry-date').value;
+        const S = parseFloat(document.getElementById('stock-price').value);
+        const E = parseFloat(document.getElementById('expected-price').value);
+        const delta = parseFloat(document.getElementById('delta').value);
+        const theta = parseFloat(document.getElementById('theta').value);
 
-            const currentDate = new Date();
-            const entryDateObj = new Date(entryDate);
-
-            const daysToEntry = (entryDateObj - currentDate) / (1000 * 3600 * 24);
-
-            if (daysToEntry <= 0) {
-                document.getElementById('result').innerHTML = '<p class="error">Expected Entry Date must be after the Current Date!</p>';
-                return;
-            }
-
-            // Fixed risk-free interest rate
-            const r = 6 / 100;
-
-            // Option price adjustment based on Delta and Theta
-            const adjustedOptionPrice = currentOptionPrice + (delta * (E - S)) - (theta * daysToEntry);
-
-            let resultMessage = `
-                <div class="result-item">
-                    <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
-                </div>
-                <div class="result-item">
-                    <span>Calculated Entry Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
-                </div>
-                <div class="result-item">
-                    <span>Time to Entry:</span> ${Math.ceil(daysToEntry)} days
-                </div>
-            `;
-
-            document.getElementById('result').innerHTML = resultMessage;
+        if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta)) {
+            document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
+            return;
         }
-    </script>
+
+        const currentDate = new Date();
+        const entryDateObj = new Date(entryDate);
+
+        // Calculate working days to entry
+        const workingDaysToEntry = calculateWorkingDays(currentDate, entryDateObj);
+
+        if (workingDaysToEntry <= 0) {
+            document.getElementById('result').innerHTML = '<p class="error">Expected Entry Date must be a future working day!</p>';
+            return;
+        }
+
+        // Fixed risk-free interest rate
+        const r = 6 / 100;
+
+        // Option price adjustment based on Delta and Theta
+        const adjustedOptionPrice = currentOptionPrice + (delta * (E - S)) - (theta * workingDaysToEntry);
+
+        let resultMessage = `
+            <div class="result-item">
+                <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
+            </div>
+            <div class="result-item">
+                <span>Calculated Entry Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
+            </div>
+            <div class="result-item">
+                <span>Time to Entry (Working Days):</span> ${workingDaysToEntry} days
+            </div>
+        `;
+
+        document.getElementById('result').innerHTML = resultMessage;
+    }
+</script>
 </body>
 </html>
