@@ -3,183 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Option Value Calculator</title>
+    <title>Option Price Calculator</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
         }
         .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
             max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
             padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
             color: #333;
         }
+        .form-group {
+            margin-bottom: 15px;
+        }
         label {
             display: block;
-            margin-bottom: 8px;
             font-weight: bold;
+            margin-bottom: 5px;
         }
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         button {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 18px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
+            display: block;
             width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
-        .results {
-            margin-top: 30px;
-        }
-        .result-item {
-            margin-bottom: 10px;
-        }
-        .result-item span {
-            font-weight: bold;
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
         }
         .error {
             color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Option Value Calculator</h1>
-        <form id="option-form">
-            <label for="option-type">Select Option Type:</label>
+        <h1>Option Price Calculator</h1>
+        <div class="form-group">
+            <label for="option-type">Select Option Type (Call/Put):</label>
             <select id="option-type">
                 <option value="call">Call</option>
                 <option value="put">Put</option>
             </select>
-
+        </div>
+        <div class="form-group">
             <label for="strike-price">Option Strike Price (₹):</label>
             <input type="number" id="strike-price" step="0.01" required>
-
+        </div>
+        <div class="form-group">
             <label for="current-option-price">Current Option Price (₹):</label>
             <input type="number" id="current-option-price" step="0.01" required>
-
+        </div>
+        <div class="form-group">
             <label for="trade-date">Trade Date (DD/MM/YYYY):</label>
-            <input type="text" id="trade-date" placeholder="DD/MM/YYYY" required>
-
+            <input type="date" id="trade-date" required>
+        </div>
+        <div class="form-group">
             <label for="exit-date">Expected Exit Date (DD/MM/YYYY):</label>
-            <input type="text" id="exit-date" placeholder="DD/MM/YYYY" required>
-
-            <label for="expiry-date">Option Expiry Date (DD/MM/YYYY):</label>
-            <input type="text" id="expiry-date" placeholder="DD/MM/YYYY" required>
-
+            <input type="date" id="exit-date" required>
+        </div>
+        <div class="form-group">
             <label for="stock-price">Underlying Stock Price (₹):</label>
             <input type="number" id="stock-price" step="0.01" required>
-
+        </div>
+        <div class="form-group">
             <label for="expected-price">Expected Price of Stock (₹):</label>
             <input type="number" id="expected-price" step="0.01" required>
-
-            <label for="risk-free-rate">Risk-Free Interest Rate (%):</label>
-            <input type="number" id="risk-free-rate" step="0.01" required>
-
-            <button type="button" onclick="calculateOptionValue()">Calculate</button>
-        </form>
-
-        <div class="results" id="result"></div>
+        </div>
+        <div class="form-group">
+            <label for="delta">Delta Value (can be positive or negative):</label>
+            <input type="number" id="delta" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="theta">Theta Decay Value:</label>
+            <input type="number" id="theta" step="0.01" required>
+        </div>
+        <button onclick="calculateOptionPrice()">Calculate</button>
+        <div id="result" class="result"></div>
     </div>
 
     <script>
-    function calculateOptionAtExit() {
-    const optionType = document.getElementById('option-type').value;
-    const K = parseFloat(document.getElementById('strike-price').value);
-    const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
-    const tradeDate = document.getElementById('trade-date').value;
-    const exitDate = document.getElementById('exit-date').value;
-    const expiryDate = document.getElementById('expiry-date').value;
-    const S = parseFloat(document.getElementById('stock-price').value);
-    const E = parseFloat(document.getElementById('expected-price').value);
-    const r = parseFloat(document.getElementById('risk-free-rate').value) / 100;
+        function calculateOptionPrice() {
+            const optionType = document.getElementById('option-type').value;
+            const K = parseFloat(document.getElementById('strike-price').value);
+            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+            const tradeDate = document.getElementById('trade-date').value;
+            const exitDate = document.getElementById('exit-date').value;
+            const S = parseFloat(document.getElementById('stock-price').value);
+            const E = parseFloat(document.getElementById('expected-price').value);
+            const delta = parseFloat(document.getElementById('delta').value);
+            const theta = parseFloat(document.getElementById('theta').value);
 
-    if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(r)) {
-        document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
-        return;
-    }
+            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta)) {
+                document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
+                return;
+            }
 
-    const tradeDateObj = new Date(tradeDate.split('/')[2], tradeDate.split('/')[1] - 1, tradeDate.split('/')[0]);
-    const exitDateObj = new Date(exitDate.split('/')[2], exitDate.split('/')[1] - 1, exitDate.split('/')[0]);
-    const expiryDateObj = new Date(expiryDate.split('/')[2], expiryDate.split('/')[1] - 1, expiryDate.split('/')[0]);
+            const tradeDateObj = new Date(tradeDate);
+            const exitDateObj = new Date(exitDate);
 
-    const daysToExit = (exitDateObj - tradeDateObj) / (1000 * 3600 * 24);
-    const daysToExpiry = (expiryDateObj - tradeDateObj) / (1000 * 3600 * 24);
+            const daysToExit = (exitDateObj - tradeDateObj) / (1000 * 3600 * 24);
 
-    const T_exit = daysToExit / 365; // Time to exit in years
-    const T_expiry = daysToExpiry / 365; // Time to expiry in years
+            if (daysToExit <= 0) {
+                document.getElementById('result').innerHTML = '<p class="error">Expected Exit Date must be after the Trade Date!</p>';
+                return;
+            }
 
-    if (T_exit <= 0 || T_expiry <= 0) {
-        document.getElementById('result').innerHTML = '<p class="error">Dates must be in the correct order!</p>';
-        return;
-    }
+            // Fixed risk-free interest rate
+            const r = 6 / 100;
 
-    // Volatility approximation
-    const σ = Math.log(E / S) / Math.sqrt(T_expiry);
+            // Option price adjustment based on Delta and Theta
+            const adjustedOptionPrice = currentOptionPrice + (delta * (E - S)) - (theta * daysToExit);
 
-    if (σ <= 0) {
-        document.getElementById('result').innerHTML = '<p class="error">Expected price must be greater than the current stock price!</p>';
-        return;
-    }
+            let resultMessage = `
+                <div class="result-item">
+                    <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
+                </div>
+                <div class="result-item">
+                    <span>Calculated Option Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <span>Time to Exit:</span> ${daysToExit} days
+                </div>
+            `;
 
-    const d1 = (Math.log(S / K) + (r + Math.pow(σ, 2) / 2) * T_exit) / (σ * Math.sqrt(T_exit));
-    const d2 = d1 - σ * Math.sqrt(T_exit);
-
-    function N(x) {
-        const t = 1 / (1 + 0.2316419 * Math.abs(x));
-        const d = 0.3989422804014337 * Math.exp(-x * x / 2);
-        const n = d * (t * (0.319381530 * t - 0.356563782 * t * t + 1.781477937 * t * t * t - 1.821255978 * t * t * t * t + 1.330274429 * t * t * t * t * t));
-        return x >= 0 ? 1 - n : n;
-    }
-
-    const callPrice = S * N(d1) - K * Math.exp(-r * T_exit) * N(d2);
-    const putPrice = K * Math.exp(-r * T_exit) * N(-d2) - S * N(-d1);
-
-    let resultMessage = `
-        <div class="result-item">
-            <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
-        </div>
-        <div class="result-item">
-            <span>Calculated Option Price at Exit (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${optionType === 'call' ? callPrice.toFixed(2) : putPrice.toFixed(2)}
-        </div>
-        <div class="result-item">
-            <span>Time to Exit:</span> ${daysToExit} days (${T_exit.toFixed(2)} years)
-        </div>
-        <div class="result-item">
-            <span>Calculated Volatility (σ):</span> ${(σ * 100).toFixed(2)}%
-        </div>
-    `;
-
-    document.getElementById('result').innerHTML = resultMessage;
-}
-</script>
-
+            document.getElementById('result').innerHTML = resultMessage;
+        }
+    </script>
 </body>
 </html>
