@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Entry Price Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Option Entry Price Calculator</h1>
+        <div class="form-group">
+            <label for="option-type">Select Option Type (Call/Put):</label>
+            <select id="option-type" onchange="updateExpectedPriceLabel()">
+                <option value="call">Call</option>
+                <option value="put">Put</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="strike-price">Option Strike Price (₹):</label>
+            <input type="number" id="strike-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="current-option-price">Current Option Price (₹):</label>
+            <input type="number" id="current-option-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>Current Date:</label>
+            <input type="text" id="current-date" disabled>
+        </div>
+        <div class="form-group">
+            <label for="entry-date">Expected Entry Date (DD/MM/YYYY):</label>
+            <input type="date" id="entry-date" required>
+        </div>
+        <div class="form-group">
+            <label for="stock-price">Underlying Stock Price (₹):</label>
+            <input type="number" id="stock-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="expected-price" id="expected-price-label">Expected Price of Stock (₹):</label>
+            <input type="number" id="expected-price" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="delta">Delta Value (can be positive or negative):</label>
+            <input type="number" id="delta" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="theta">Theta Decay Value:</label>
+            <input type="number" id="theta" step="0.01" required>
+        </div>
+        <button onclick="calculateEntryPrice()">Calculate</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Set the current date in the form
+        document.getElementById('current-date').value = new Date().toLocaleDateString('en-GB');
+
+        function updateExpectedPriceLabel() {
+            const optionType = document.getElementById('option-type').value;
+            const label = document.getElementById('expected-price-label');
+            label.textContent = optionType === 'call'
+                ? 'Expected Price of Stock (₹) (Lower than current price):'
+                : 'Expected Price of Stock (₹) (Higher than current price):';
+        }
+
+        function calculateEntryPrice() {
+            const optionType = document.getElementById('option-type').value;
+            const K = parseFloat(document.getElementById('strike-price').value);
+            const currentOptionPrice = parseFloat(document.getElementById('current-option-price').value);
+            const entryDate = document.getElementById('entry-date').value;
+            const S = parseFloat(document.getElementById('stock-price').value);
+            const E = parseFloat(document.getElementById('expected-price').value);
+            const delta = parseFloat(document.getElementById('delta').value);
+            const theta = parseFloat(document.getElementById('theta').value);
+
+            if (isNaN(K) || isNaN(currentOptionPrice) || isNaN(S) || isNaN(E) || isNaN(delta) || isNaN(theta)) {
+                document.getElementById('result').innerHTML = '<p class="error">Please fill in all fields with valid numbers!</p>';
+                return;
+            }
+
+            const currentDate = new Date();
+            const entryDateObj = new Date(entryDate);
+
+            const daysToEntry = (entryDateObj - currentDate) / (1000 * 3600 * 24);
+
+            if (daysToEntry <= 0) {
+                document.getElementById('result').innerHTML = '<p class="error">Expected Entry Date must be after the Current Date!</p>';
+                return;
+            }
+
+            // Fixed risk-free interest rate
+            const r = 6 / 100;
+
+            // Option price adjustment based on Delta and Theta
+            const adjustedOptionPrice = currentOptionPrice + (delta * (E - S)) - (theta * daysToEntry);
+
+            let resultMessage = `
+                <div class="result-item">
+                    <span>Option Type:</span> ${optionType.charAt(0).toUpperCase() + optionType.slice(1)}
+                </div>
+                <div class="result-item">
+                    <span>Calculated Entry Price (${optionType === 'call' ? 'CE' : 'PE'}):</span> ₹${adjustedOptionPrice.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <span>Time to Entry:</span> ${Math.ceil(daysToEntry)} days
+                </div>
+            `;
+
+            document.getElementById('result').innerHTML = resultMessage;
+        }
+    </script>
+</body>
+</html>
