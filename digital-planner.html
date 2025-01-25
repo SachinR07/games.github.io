@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple Planner/To-Do App to manage tasks.">
+  <meta name="keywords" content="Planner App, To-Do List, Task Manager, planner app, daily planner app, best planner app, best planner app free, day planner app, planner app android, planner app apple, planner app android reddit, planner app android free, planner app ai, planner as app, ai planner app, apple planner app, planner app best,planner app by apple, planner book app,best planner app for ipad,best digital planner app,best planner app for iphone,planner app cute,planner calendar app free,calendar planner app, Productivity App">
+  <meta name="author" content="Your Name">
+  <title>Planner | To-Do App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #taskInput {
+      width: 80%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #addTaskBtn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #addTaskBtn:hover {
+      background-color: #45a049;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .delete-btn {
+      padding: 5px 10px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #d32f2f;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Planner | To-Do App</h1>
+    <input type="text" id="taskInput" placeholder="Enter a new task..." />
+    <button id="addTaskBtn">Add Task</button>
+    <ul id="taskList"></ul>
+    <div class="info">
+      <p>Your tasks are saved automatically in your browser!</p>
+    </div>
+  </div>
+
+  <script>
+    // Load tasks from localStorage on startup
+    window.onload = function() {
+      const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      savedTasks.forEach(task => addTaskToDOM(task.text, task.completed));
+    };
+
+    // Add task
+    document.getElementById('addTaskBtn').addEventListener('click', function() {
+      const taskInput = document.getElementById('taskInput');
+      const taskText = taskInput.value.trim();
+      if (taskText) {
+        addTaskToDOM(taskText);
+        saveTaskToLocalStorage(taskText, false);
+        taskInput.value = '';
+      } else {
+        alert('Please enter a task!');
+      }
+    });
+
+    // Add task to DOM
+    function addTaskToDOM(taskText, completed = false) {
+      const taskList = document.getElementById('taskList');
+      const li = document.createElement('li');
+      li.className = completed ? 'completed' : '';
+      li.innerHTML = `
+        <span onclick="toggleComplete(this)">${taskText}</span>
+        <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+      `;
+      taskList.appendChild(li);
+    }
+
+    // Save task to localStorage
+    function saveTaskToLocalStorage(taskText, completed) {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.push({ text: taskText, completed: completed });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // Toggle task completion
+    function toggleComplete(spanElement) {
+      const li = spanElement.parentElement;
+      li.classList.toggle('completed');
+      const taskText = spanElement.textContent;
+      updateTaskInLocalStorage(taskText, li.classList.contains('completed'));
+    }
+
+    // Update task completion in localStorage
+    function updateTaskInLocalStorage(taskText, completed) {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      const updatedTasks = tasks.map(task =>
+        task.text === taskText ? { ...task, completed: completed } : task
+      );
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    }
+
+    // Delete task
+    function deleteTask(buttonElement) {
+      const li = buttonElement.parentElement;
+      const taskText = li.querySelector('span').textContent;
+      li.remove();
+      deleteTaskFromLocalStorage(taskText);
+    }
+
+    // Delete task from localStorage
+    function deleteTaskFromLocalStorage(taskText) {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      const updatedTasks = tasks.filter(task => task.text !== taskText);
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    }
+  </script>
+</body>
+</html>
