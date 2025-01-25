@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -7,14 +7,14 @@
   <meta name="keywords" content="Planner App, To-Do List, Task Manager, planner app, daily planner app, best planner app, best planner app free, day planner app, planner app android, planner app apple, planner app android reddit, planner app android free, planner app ai, planner as app, ai planner app, apple planner app, planner app best,planner app by apple, planner book app,best planner app for ipad,best digital planner app,best planner app for iphone,planner app cute,planner calendar app free,calendar planner app, Productivity App">
   <meta name="author" content="Your Name">
   <title>Planner | To-Do App</title>
-   <style>
+    <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f4f9;
-      text-align: center;
     }
+
     .container {
       max-width: 700px;
       margin: 20px auto;
@@ -22,17 +22,39 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
+
     h1 {
       margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
     }
+
+    .form-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     input, select {
       padding: 10px;
       margin: 5px;
-      width: 90%;
+      width: 200px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      font-size: 14px;
     }
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #555;
+    }
+
     button {
       padding: 10px 20px;
       margin-top: 10px;
@@ -41,240 +63,118 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 14px;
     }
+
     button:hover {
       background-color: #45a049;
     }
+
     ul {
       list-style-type: none;
       padding: 0;
     }
+
     li {
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      justify-content: space-between;
+      align-items: center;
       margin: 10px 0;
       padding: 10px;
       background-color: #f9f9f9;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    li.completed {
-      text-decoration: line-through;
-      color: gray;
-    }
+
     .task-header {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .priority-high {
-      color: green;
+      font-size: 16px;
       font-weight: bold;
     }
-    .priority-medium {
-      color: blue;
-      font-weight: bold;
-    }
-    .priority-low {
-      color: yellow;
-      font-weight: bold;
-    }
-    .details {
-      margin-top: 5px;
-      font-size: 12px;
+
+    .task-details {
+      font-size: 14px;
       color: #555;
     }
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      width: 100%;
-    }
-    .delete-btn, .complete-btn {
-      padding: 5px 10px;
-      margin: 0 5px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+
     .delete-btn {
       background-color: #f44336;
       color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
     }
+
     .delete-btn:hover {
       background-color: #d32f2f;
-    }
-    .complete-btn {
-      background-color: #2196F3;
-      color: white;
-    }
-    .complete-btn:hover {
-      background-color: #1976d2;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Planner | To-Do App</h1>
-  <div class="form-group">
-    <input type="text" id="taskInput" placeholder="Enter your task..." />
-    <input type="date" id="deadlineInput" />
+  <div class="container">
+    <h1>Planner | To-Do App</h1>
+    <div class="form-group">
+      <input type="text" id="taskInput" placeholder="Enter your task..." />
+      <input type="date" id="deadlineInput" />
+    </div>
+    <div class="form-group">
+      <label for="priorityInput">Priority:</label>
+      <select id="priorityInput">
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+    <button id="addTaskBtn">Add Task</button>
+    <ul id="taskList"></ul>
   </div>
-  <div class="form-group">
-    <label for="priorityInput" class="priority-label">Priority:</label>
-    <select id="priorityInput">
-      <option value="High">High 🔥</option>
-      <option value="Medium">Medium</option>
-      <option value="Low">Low</option>
-    </select>
-  </div>
-  <button id="addTaskBtn">Add Task</button>
-  <ul id="taskList"></ul>
-</div>
-
-<style>
-  .container {
-    max-width: 700px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-  }
-
-  .form-group {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  input, select {
-    padding: 10px;
-    margin: 5px;
-    width: auto;
-    min-width: 200px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-
-  label {
-    font-size: 14px;
-    margin-right: 10px;
-    font-weight: bold;
-    color: #555;
-  }
-
-  button {
-    padding: 10px 20px;
-    margin-top: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  button:hover {
-    background-color: #45a049;
-  }
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-</style>
-
 
   <script>
-    // Load tasks from localStorage on startup and check for deadlines
-    window.onload = function() {
-      const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      savedTasks.forEach(task => addTaskToDOM(task.text, task.deadline, task.category, task.priority, task.completed));
-    };
-
-    // Add task
+    // Add task functionality
     document.getElementById('addTaskBtn').addEventListener('click', function() {
       const taskInput = document.getElementById('taskInput').value.trim();
       const deadlineInput = document.getElementById('deadlineInput').value;
-      const categoryInput = document.getElementById('categoryInput').value;
       const priorityInput = document.getElementById('priorityInput').value;
 
       if (taskInput) {
-        addTaskToDOM(taskInput, deadlineInput, categoryInput, priorityInput);
-        saveTaskToLocalStorage(taskInput, deadlineInput, categoryInput, priorityInput, false);
-        document.getElementById('taskInput').value = '';
-        document.getElementById('deadlineInput').value = '';
+        addTaskToDOM(taskInput, deadlineInput, priorityInput);
+        clearInputs();
       } else {
         alert('Please enter a task!');
       }
     });
 
     // Add task to DOM
-    function addTaskToDOM(taskText, deadline, category, priority, completed = false) {
+    function addTaskToDOM(task, deadline, priority) {
       const taskList = document.getElementById('taskList');
       const li = document.createElement('li');
-      li.className = completed ? 'completed' : '';
-
-      // Apply priority color
-      const priorityClass = priority === 'High' ? 'priority-high' 
-                          : priority === 'Medium' ? 'priority-medium' 
-                          : 'priority-low';
 
       li.innerHTML = `
-        <div class="task-header">
-          <span>${taskText}</span>
-          <span class="${priorityClass}">${priority}</span>
+        <div>
+          <div class="task-header">${task}</div>
+          <div class="task-details">Deadline: ${deadline || 'None'} | Priority: ${priority}</div>
         </div>
-        <div class="details">
-          <span>Category: ${category}</span> | 
-          <span>Deadline: ${deadline || 'None'}</span>
-        </div>
-        <div class="actions">
-          <button class="complete-btn" onclick="toggleComplete(this)">${completed ? 'Mark Incomplete' : 'Mark Complete'}</button>
-          <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
-        </div>
+        <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
       `;
+
+      // Apply priority color
+      li.style.borderLeft = `10px solid ${
+        priority === 'High' ? 'green' : priority === 'Medium' ? 'blue' : 'yellow'
+      }`;
+
       taskList.appendChild(li);
     }
 
-    // Save task to localStorage
-    function saveTaskToLocalStorage(taskText, deadline, category, priority, completed) {
-      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      tasks.push({ text: taskText, deadline, category, priority, completed });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    // Toggle task completion
-    function toggleComplete(buttonElement) {
-      const li = buttonElement.parentElement.parentElement;
-      const taskText = li.querySelector('.task-header span').textContent;
-      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      const updatedTasks = tasks.map(task =>
-        task.text === taskText ? { ...task, completed: !task.completed } : task
-      );
-      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-      li.classList.toggle('completed');
-      buttonElement.textContent = li.classList.contains('completed') ? 'Mark Incomplete' : 'Mark Complete';
+    // Clear input fields
+    function clearInputs() {
+      document.getElementById('taskInput').value = '';
+      document.getElementById('deadlineInput').value = '';
+      document.getElementById('priorityInput').value = 'High';
     }
 
     // Delete task
     function deleteTask(buttonElement) {
-      const li = buttonElement.parentElement.parentElement;
-      const taskText = li.querySelector('.task-header span').textContent;
-      li.remove();
-      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      const updatedTasks = tasks.filter(task => task.text !== taskText);
-      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+      buttonElement.parentElement.remove();
     }
   </script>
 </body>
