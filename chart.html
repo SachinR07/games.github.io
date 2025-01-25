@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradingView Chart</title>
+</head>
+<body>
+    <div class="chart">
+        <div class="tradingview-widget-container" id="tradingview_0b60e">
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                new TradingView.widget({
+                    "container_id": "tradingview_0b60e",
+                    "width": 800,
+                    "height": 500,
+                    "symbol": "NASDAQ:AAPL", // Replace with your desired symbol
+                    "interval": "D",
+                    "timezone": "Etc/UTC",
+                    "theme": "light",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#f1f3f6",
+                    "enable_publishing": false,
+                    "allow_symbol_change": true,
+                    "save_image": false,
+                    "studies": ["RSI@tv-basicstudies"],
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>
