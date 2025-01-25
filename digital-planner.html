@@ -7,7 +7,7 @@
   <meta name="keywords" content="Planner App, To-Do List, Task Manager, planner app, daily planner app, best planner app, best planner app free, day planner app, planner app android, planner app apple, planner app android reddit, planner app android free, planner app ai, planner as app, ai planner app, apple planner app, planner app best,planner app by apple, planner book app,best planner app for ipad,best digital planner app,best planner app for iphone,planner app cute,planner calendar app free,calendar planner app, Productivity App">
   <meta name="author" content="Your Name">
   <title>Planner | To-Do App</title>
-  <style>
+    <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -16,7 +16,7 @@
       text-align: center;
     }
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       padding: 20px;
       background: white;
@@ -26,22 +26,23 @@
     h1 {
       margin-bottom: 20px;
     }
-    #taskInput {
-      width: 80%;
+    input, select {
       padding: 10px;
-      margin-bottom: 20px;
+      margin: 5px;
+      width: 90%;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    #addTaskBtn {
+    button {
       padding: 10px 20px;
+      margin-top: 10px;
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    #addTaskBtn:hover {
+    button:hover {
       background-color: #45a049;
     }
     ul {
@@ -50,10 +51,10 @@
     }
     li {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
+      margin: 10px 0;
       padding: 10px;
-      margin: 5px 0;
       background-color: #f9f9f9;
       border: 1px solid #ccc;
       border-radius: 5px;
@@ -62,107 +63,136 @@
       text-decoration: line-through;
       color: gray;
     }
-    .delete-btn {
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .details {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #555;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    .delete-btn, .complete-btn {
       padding: 5px 10px;
-      background-color: #f44336;
-      color: white;
+      margin: 0 5px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+    }
     .delete-btn:hover {
       background-color: #d32f2f;
     }
-    .info {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
+    .complete-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+    .complete-btn:hover {
+      background-color: #1976d2;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Planner | To-Do App</h1>
-    <input type="text" id="taskInput" placeholder="Enter a new task..." />
+    <h1>Advanced Planner | To-Do App</h1>
+    <input type="text" id="taskInput" placeholder="Enter your task..." />
+    <input type="date" id="deadlineInput" />
+    <select id="categoryInput">
+      <option value="Work">Work</option>
+      <option value="Personal">Personal</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Other">Other</option>
+    </select>
+    <select id="priorityInput">
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
     <button id="addTaskBtn">Add Task</button>
     <ul id="taskList"></ul>
-    <div class="info">
-      <p>Your tasks are saved automatically in your browser!
-        Features:
-
-Add Tasks: Enter a task and click "Add Task" to add it to the list.
-Mark Complete: Click on a task to mark it as complete (with a strikethrough effect).
-Delete Tasks: Remove tasks with the "Delete" button.
-Persistence: Tasks are stored in localStorage, so they persist even after refreshing the page.</p>
-    </div>
   </div>
 
   <script>
     // Load tasks from localStorage on startup
     window.onload = function() {
       const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      savedTasks.forEach(task => addTaskToDOM(task.text, task.completed));
+      savedTasks.forEach(task => addTaskToDOM(task.text, task.deadline, task.category, task.priority, task.completed));
     };
 
     // Add task
     document.getElementById('addTaskBtn').addEventListener('click', function() {
-      const taskInput = document.getElementById('taskInput');
-      const taskText = taskInput.value.trim();
-      if (taskText) {
-        addTaskToDOM(taskText);
-        saveTaskToLocalStorage(taskText, false);
-        taskInput.value = '';
+      const taskInput = document.getElementById('taskInput').value.trim();
+      const deadlineInput = document.getElementById('deadlineInput').value;
+      const categoryInput = document.getElementById('categoryInput').value;
+      const priorityInput = document.getElementById('priorityInput').value;
+
+      if (taskInput) {
+        addTaskToDOM(taskInput, deadlineInput, categoryInput, priorityInput);
+        saveTaskToLocalStorage(taskInput, deadlineInput, categoryInput, priorityInput, false);
+        document.getElementById('taskInput').value = '';
+        document.getElementById('deadlineInput').value = '';
       } else {
         alert('Please enter a task!');
       }
     });
 
     // Add task to DOM
-    function addTaskToDOM(taskText, completed = false) {
+    function addTaskToDOM(taskText, deadline, category, priority, completed = false) {
       const taskList = document.getElementById('taskList');
       const li = document.createElement('li');
       li.className = completed ? 'completed' : '';
+
       li.innerHTML = `
-        <span onclick="toggleComplete(this)">${taskText}</span>
-        <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+        <div class="task-header">
+          <span>${taskText}</span>
+          <span>[${priority}]</span>
+        </div>
+        <div class="details">
+          <span>Category: ${category}</span> | 
+          <span>Deadline: ${deadline || 'None'}</span>
+        </div>
+        <div class="actions">
+          <button class="complete-btn" onclick="toggleComplete(this)">${completed ? 'Mark Incomplete' : 'Mark Complete'}</button>
+          <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
+        </div>
       `;
       taskList.appendChild(li);
     }
 
     // Save task to localStorage
-    function saveTaskToLocalStorage(taskText, completed) {
+    function saveTaskToLocalStorage(taskText, deadline, category, priority, completed) {
       const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      tasks.push({ text: taskText, completed: completed });
+      tasks.push({ text: taskText, deadline, category, priority, completed });
       localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     // Toggle task completion
-    function toggleComplete(spanElement) {
-      const li = spanElement.parentElement;
-      li.classList.toggle('completed');
-      const taskText = spanElement.textContent;
-      updateTaskInLocalStorage(taskText, li.classList.contains('completed'));
-    }
-
-    // Update task completion in localStorage
-    function updateTaskInLocalStorage(taskText, completed) {
+    function toggleComplete(buttonElement) {
+      const li = buttonElement.parentElement.parentElement;
+      const taskText = li.querySelector('.task-header span').textContent;
       const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
       const updatedTasks = tasks.map(task =>
-        task.text === taskText ? { ...task, completed: completed } : task
+        task.text === taskText ? { ...task, completed: !task.completed } : task
       );
       localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+      li.classList.toggle('completed');
+      buttonElement.textContent = li.classList.contains('completed') ? 'Mark Incomplete' : 'Mark Complete';
     }
 
     // Delete task
     function deleteTask(buttonElement) {
-      const li = buttonElement.parentElement;
-      const taskText = li.querySelector('span').textContent;
+      const li = buttonElement.parentElement.parentElement;
+      const taskText = li.querySelector('.task-header span').textContent;
       li.remove();
-      deleteTaskFromLocalStorage(taskText);
-    }
-
-    // Delete task from localStorage
-    function deleteTaskFromLocalStorage(taskText) {
       const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
       const updatedTasks = tasks.filter(task => task.text !== taskText);
       localStorage.setItem('tasks', JSON.stringify(updatedTasks));
