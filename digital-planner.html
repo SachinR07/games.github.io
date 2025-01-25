@@ -7,7 +7,7 @@
   <meta name="keywords" content="Planner App, To-Do List, Task Manager, planner app, daily planner app, best planner app, best planner app free, day planner app, planner app android, planner app apple, planner app android reddit, planner app android free, planner app ai, planner as app, ai planner app, apple planner app, planner app best,planner app by apple, planner book app,best planner app for ipad,best digital planner app,best planner app for iphone,planner app cute,planner calendar app free,calendar planner app, Productivity App">
   <meta name="author" content="Your Name">
   <title>Planner | To-Do App</title>
-    <style>
+   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -68,6 +68,18 @@
       justify-content: space-between;
       width: 100%;
     }
+    .priority-high {
+      color: green;
+      font-weight: bold;
+    }
+    .priority-medium {
+      color: blue;
+      font-weight: bold;
+    }
+    .priority-low {
+      color: yellow;
+      font-weight: bold;
+    }
     .details {
       margin-top: 5px;
       font-size: 12px;
@@ -112,16 +124,16 @@
       <option value="Other">Other</option>
     </select>
     <select id="priorityInput">
-      <option value="High">High 🔥</option>
+      <option value="High">High</option>
       <option value="Medium">Medium</option>
-      <option value="Low">Low 💤</option>
+      <option value="Low">Low</option>
     </select>
     <button id="addTaskBtn">Add Task</button>
     <ul id="taskList"></ul>
   </div>
 
   <script>
-    // Load tasks from localStorage on startup
+    // Load tasks from localStorage on startup and check for deadlines
     window.onload = function() {
       const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
       savedTasks.forEach(task => addTaskToDOM(task.text, task.deadline, task.category, task.priority, task.completed));
@@ -150,10 +162,15 @@
       const li = document.createElement('li');
       li.className = completed ? 'completed' : '';
 
+      // Apply priority color
+      const priorityClass = priority === 'High' ? 'priority-high' 
+                          : priority === 'Medium' ? 'priority-medium' 
+                          : 'priority-low';
+
       li.innerHTML = `
         <div class="task-header">
           <span>${taskText}</span>
-          <span>[${priority}]</span>
+          <span class="${priorityClass}">${priority}</span>
         </div>
         <div class="details">
           <span>Category: ${category}</span> | 
