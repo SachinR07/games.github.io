@@ -133,66 +133,93 @@
   </div>
 
   <script>
-    // Load stocks from CSV file
-    async function loadStocks() {
-      const response = await fetch("stock_list.csv"); // Ensure the CSV is in the same directory
-      const data = await response.text();
-      const rows = data.split("\n");
-      const stockSelect = document.getElementById("stockSelect");
-      rows.forEach((row) => {
-        if (row.trim()) {
-          const option = document.createElement("option");
-          option.value = row.trim();
-          option.textContent = row.trim();
-          stockSelect.appendChild(option);
-        }
-      });
+// Load stocks from CSV file
+async function loadStocks() {
+  const response = await fetch("stock_list.csv"); // Ensure the CSV is in the same directory
+  const data = await response.text();
+  const rows = data.split("\n");
+  const stockSelect = document.getElementById("stockSelect");
+  rows.forEach((row) => {
+    if (row.trim()) {
+      const option = document.createElement("option");
+      option.value = row.trim();
+      option.textContent = row.trim();
+      stockSelect.appendChild(option);
     }
+  });
+}
 
-    // Add task functionality
-    document.getElementById("addTaskBtn").addEventListener("click", function () {
-      const stock = document.getElementById("stockSelect").value;
-      const deadline = document.getElementById("deadlineInput").value;
-      const optionType = document.getElementById("optionType").value;
+// Add task functionality
+document.getElementById("addTaskBtn").addEventListener("click", function () {
+  const stock = document.getElementById("stockSelect").value;
+  const deadline = document.getElementById("deadlineInput").value;
+  const optionType = document.getElementById("optionType").value;
 
-      if (stock) {
-        addTaskToDOM(stock, deadline, optionType);
-        clearInputs();
-      } else {
-        alert("Please select a stock!");
-      }
-    });
+  if (stock) {
+    addTaskToDOM(stock, deadline, optionType);
+    saveTaskToLocalStorage(stock, deadline, optionType);
+    clearInputs();
+  } else {
+    alert("Please select a stock!");
+  }
+});
 
-    // Add task to DOM
-    function addTaskToDOM(stock, deadline, optionType) {
-      const taskList = document.getElementById("taskList");
-      const li = document.createElement("li");
+// Add task to DOM
+function addTaskToDOM(stock, deadline, optionType) {
+  const taskList = document.getElementById("taskList");
+  const li = document.createElement("li");
 
-      li.innerHTML = `
-        <div>
-          <div class="task-header">${stock}</div>
-          <div class="task-details">Deadline: ${deadline || "None"} | Option Type: ${optionType}</div>
-        </div>
-        <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
-      `;
+  li.innerHTML = `
+    <div>
+      <div class="task-header">${stock}</div>
+      <div class="task-details">Deadline: ${deadline || "None"} | Option Type: ${optionType}</div>
+    </div>
+    <button class="delete-btn" onclick="deleteTask(this, '${stock}', '${deadline}', '${optionType}')">Delete</button>
+  `;
 
-      taskList.appendChild(li);
-    }
+  taskList.appendChild(li);
+}
 
-    // Clear input fields
-    function clearInputs() {
-      document.getElementById("stockSelect").value = "";
-      document.getElementById("deadlineInput").value = "";
-      document.getElementById("optionType").value = "Call";
-    }
+// Save task to local storage
+function saveTaskToLocalStorage(stock, deadline, optionType) {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  tasks.push({ stock, deadline, optionType });
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
-    // Delete task
-    function deleteTask(buttonElement) {
-      buttonElement.parentElement.remove();
-    }
+// Clear input fields
+function clearInputs() {
+  document.getElementById("stockSelect").value = "";
+  document.getElementById("deadlineInput").value = "";
+  document.getElementById("optionType").value = "Call";
+}
 
-    // Load stocks on page load
-    loadStocks();
+// Delete task
+function deleteTask(buttonElement, stock, deadline, optionType) {
+  buttonElement.parentElement.remove();
+  removeTaskFromLocalStorage(stock, deadline, optionType);
+}
+
+// Remove task from local storage
+function removeTaskFromLocalStorage(stock, deadline, optionType) {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const updatedTasks = tasks.filter(task => task.stock !== stock || task.deadline !== deadline || task.optionType !== optionType);
+  localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+}
+
+// Load tasks from local storage on page load
+function loadTasksFromLocalStorage() {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  tasks.forEach(task => {
+    addTaskToDOM(task.stock, task.deadline, task.optionType);
+  });
+}
+
+// Load stocks and tasks on page load
+window.onload = function() {
+  loadStocks();
+  loadTasksFromLocalStorage();
+};
   </script>
 </body>
 </html>
