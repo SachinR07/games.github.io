@@ -226,6 +226,10 @@ window.onload = function() {
   loadStocks();
   loadTasksFromLocalStorage();
 };
+  // Disable right-click
+    document.addEventListener("contextmenu", function(event) {
+      event.preventDefault();
+    });
 </script>
 </body>
 </html>
