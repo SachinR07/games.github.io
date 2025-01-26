@@ -176,9 +176,14 @@ function addTaskToDOM(stock, deadline, optionType) {
     </div>
     <button class="delete-btn" onclick="deleteTask(this, '${stock}', '${deadline}', '${optionType}')">Delete</button>
   `;
+// Apply Option Type color
+li.style.borderLeft = `10px solid ${
+  OptionType === 'call' ? '#4CAF50' : 
+  OptionType === 'put' ? '#f44336' : 
+  '#2196F3'
+}`;
 
-  taskList.appendChild(li);
-}
+taskList.appendChild(li);
 
 // Save task to local storage
 function saveTaskToLocalStorage(stock, deadline, optionType) {
