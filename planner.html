@@ -131,8 +131,7 @@
     <button id="addTaskBtn">Add Task</button>
     <ul id="taskList"></ul>
   </div>
-
-  <script>
+<script>
 // Load stocks from CSV file
 async function loadStocks() {
   const response = await fetch("stock_list.csv"); // Ensure the CSV is in the same directory
@@ -168,6 +167,13 @@ document.getElementById("addTaskBtn").addEventListener("click", function () {
 function addTaskToDOM(stock, deadline, optionType) {
   const taskList = document.getElementById("taskList");
   const li = document.createElement("li");
+
+  // Apply Option Type color to the left border
+  li.style.borderLeft = `10px solid ${
+    optionType === 'call' ? '#4CAF50' : 
+    optionType === 'put' ? '#f44336' : 
+    '#2196F3'
+  }`;
 
   li.innerHTML = `
     <div>
@@ -220,6 +226,6 @@ window.onload = function() {
   loadStocks();
   loadTasksFromLocalStorage();
 };
-  </script>
+</script>
 </body>
 </html>
