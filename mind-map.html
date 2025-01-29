@@ -40,6 +40,7 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       cursor: pointer;
       transition: all 0.3s ease;
+      position: relative;
     }
     .node:hover {
       transform: scale(1.05);
@@ -100,8 +101,15 @@
       node.classList.add('node');
       node.innerHTML = `
         <input type="text" value="${text}" placeholder="Enter text...">
-        <button onclick="addChildNode(this.parentNode)">Add Child</button>
       `;
+      
+      // Disable right-click default menu
+      node.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        showContextMenu(event, node);
+      });
+
+      // Select node on click
       node.addEventListener('click', (event) => {
         event.stopPropagation(); // Prevent parent nodes from being selected
         if (selectedNode) {
@@ -110,6 +118,7 @@
         selectedNode = node;
         selectedNode.classList.add('selected');
       });
+
       return node;
     }
 
@@ -120,7 +129,7 @@
       parentNode.appendChild(childNode);
     }
 
-    // Function to save the mind map (you can implement your own saving logic here)
+    // Function to save the mind map
     function saveMindMap() {
       const mindmapData = serializeMindmap(rootNode);
       localStorage.setItem('mindmapData', JSON.stringify(mindmapData));
@@ -139,8 +148,51 @@
       });
       return data;
     }
+
+    // Show a custom context menu to add child nodes
+    function showContextMenu(event, node) {
+      // Remove any existing context menu
+      const existingMenu = document.getElementById('context-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+      }
+
+      // Create the context menu
+      const menu = document.createElement('div');
+      menu.id = 'context-menu';
+      menu.style.position = 'absolute';
+      menu.style.top = `${event.clientY}px`;
+      menu.style.left = `${event.clientX}px`;
+      menu.style.backgroundColor = '#fff';
+      menu.style.border = '1px solid #ccc';
+      menu.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+      menu.style.padding = '10px';
+      menu.style.zIndex = '1000';
+      menu.style.borderRadius = '5px';
+      menu.innerHTML = `
+        <button onclick="addChildNodeFromMenu(event, '${node.id}')">Add Child</button>
+      `;
+
+      document.body.appendChild(menu);
+
+      // Remove the menu on clicking elsewhere
+      document.addEventListener('click', () => menu.remove(), { once: true });
+    }
+
+    // Add a child node from the context menu
+    function addChildNodeFromMenu(event, parentNodeId) {
+      event.stopPropagation();
+      const parentNode = document.getElementById(parentNodeId);
+      addChildNode(parentNode);
+
+      // Remove the context menu
+      const menu = document.getElementById('context-menu');
+      if (menu) {
+        menu.remove();
+      }
+    }
   </script>
-<script>
+    <script>
   document.addEventListener('contextmenu', (event) => {
     event.preventDefault();
     alert('Right-click is disabled on this page.');
