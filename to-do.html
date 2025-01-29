@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="mind mapping tools, best mind mapping tools, online mind mapping tools, digital mind mapping tools, open source mind mapping tools, free mind mapping tools, AI mind mapping tools, Google mind mapping tools, best free online mind mapping tools, mind mapping apps, mind mapping tools for Apple, mind mapping software for ADHD, Android mind mapping software, AI-powered mind mapping tools, web-based mind mapping tools, mind mapping tools for teaching, brainstorming and mind mapping tools, educational mind mapping tools, mind mapping tools for students, best mind mapping tools for iPad, best mind mapping tools for Mac, best mind mapping tools for education, free AI mind mapping tools, mind mapping software benefits, sketches and doodles for mind mapping, mind mapping tools in teaching aptitude, mind mapping software blog, best mind mapping tools Reddit, agricultural mind mapping tools">
-    <title>Upcoming Events To-Do List</title>
+    <title>To-Do List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,11 +16,16 @@
         h1 {
             text-align: center;
         }
-        #eventInput {
-            width: 70%;
+        #eventInput, #eventDate {
             padding: 10px;
             font-size: 1rem;
             margin-right: 10px;
+        }
+        #eventInput {
+            width: 40%;
+        }
+        #eventDate {
+            width: 30%;
         }
         #addEventBtn {
             padding: 10px 20px;
@@ -47,6 +52,15 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .eventDetails {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .eventDate {
+            font-size: 0.9rem;
+            color: #555;
         }
         .editBtn, .deleteBtn {
             margin-left: 10px;
@@ -90,6 +104,7 @@
     <h1>Upcoming Events To-Do List</h1>
     <div style="text-align: center;">
         <input type="text" id="eventInput" placeholder="Enter an event" />
+        <input type="date" id="eventDate" />
         <button id="addEventBtn">Add Event</button>
     </div>
     <ul id="eventList"></ul>
@@ -97,6 +112,7 @@
 
     <script>
         const eventInput = document.getElementById('eventInput');
+        const eventDate = document.getElementById('eventDate');
         const addEventBtn = document.getElementById('addEventBtn');
         const eventList = document.getElementById('eventList');
         const clearAllBtn = document.getElementById('clearAllBtn');
@@ -104,55 +120,81 @@
         // Load events from localStorage
         const loadEvents = () => {
             const events = JSON.parse(localStorage.getItem('events')) || [];
-            events.forEach(event => addEventToDOM(event));
+            events.forEach(event => addEventToDOM(event.text, event.date));
         };
 
         // Save events to localStorage
         const saveEvents = () => {
             const events = [];
-            document.querySelectorAll('#eventList li span').forEach(event => {
-                events.push(event.textContent);
+            document.querySelectorAll('#eventList li').forEach(li => {
+                const text = li.querySelector('.eventText').textContent;
+                const date = li.querySelector('.eventDate').textContent;
+                events.push({ text, date });
             });
             localStorage.setItem('events', JSON.stringify(events));
         };
 
         // Add event to DOM
-        const addEventToDOM = (eventText) => {
+        const addEventToDOM = (eventText, eventDate) => {
             const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = eventText;
+
+            const eventDetails = document.createElement('div');
+            eventDetails.className = 'eventDetails';
+
+            const spanText = document.createElement('span');
+            spanText.textContent = eventText;
+            spanText.className = 'eventText';
+
+            const spanDate = document.createElement('span');
+            spanDate.textContent = eventDate;
+            spanDate.className = 'eventDate';
+
+            eventDetails.appendChild(spanText);
+            eventDetails.appendChild(spanDate);
 
             const editBtn = document.createElement('button');
             editBtn.textContent = 'Edit';
             editBtn.className = 'editBtn';
-            editBtn.onclick = () => editEvent(span);
+            editBtn.onclick = () => editEvent(li);
 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'Delete';
             deleteBtn.className = 'deleteBtn';
             deleteBtn.onclick = () => deleteEvent(li);
 
-            li.appendChild(span);
+            li.appendChild(eventDetails);
             li.appendChild(editBtn);
             li.appendChild(deleteBtn);
+
             eventList.appendChild(li);
         };
 
         // Add event
         addEventBtn.addEventListener('click', () => {
             const eventText = eventInput.value.trim();
-            if (eventText) {
-                addEventToDOM(eventText);
+            const eventDateValue = eventDate.value;
+
+            if (eventText && eventDateValue) {
+                addEventToDOM(eventText, eventDateValue);
                 saveEvents();
                 eventInput.value = '';
+                eventDate.value = '';
+            } else {
+                alert('Please enter both an event and a date!');
             }
         });
 
         // Edit event
-        const editEvent = (span) => {
-            const newText = prompt('Edit your event:', span.textContent);
-            if (newText !== null) {
-                span.textContent = newText.trim();
+        const editEvent = (li) => {
+            const text = li.querySelector('.eventText').textContent;
+            const date = li.querySelector('.eventDate').textContent;
+
+            const newText = prompt('Edit your event:', text);
+            const newDate = prompt('Edit the date (YYYY-MM-DD):', date);
+
+            if (newText && newDate) {
+                li.querySelector('.eventText').textContent = newText;
+                li.querySelector('.eventDate').textContent = newDate;
                 saveEvents();
             }
         };
@@ -172,7 +214,7 @@
         // Initialize app
         loadEvents();
     </script>
-<script>
+    <script>
   document.addEventListener('contextmenu', (event) => {
     event.preventDefault();
     alert('Right-click is disabled on this page.');
