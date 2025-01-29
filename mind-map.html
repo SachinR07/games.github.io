@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"
+    <meta name="keywords" content="mind mapping tools, best mind mapping tools, online mind mapping tools, digital mind mapping tools, open source mind mapping tools, free mind mapping tools, AI mind mapping tools, Google mind mapping tools, best free online mind mapping tools, mind mapping apps, mind mapping tools for Apple, mind mapping software for ADHD, Android mind mapping software, AI-powered mind mapping tools, web-based mind mapping tools, mind mapping tools for teaching, brainstorming and mind mapping tools, educational mind mapping tools, mind mapping tools for students, best mind mapping tools for iPad, best mind mapping tools for Mac, best mind mapping tools for education, free AI mind mapping tools, mind mapping software benefits, sketches and doodles for mind mapping, mind mapping tools in teaching aptitude, mind mapping software blog, best mind mapping tools Reddit, agricultural mind mapping tools">
+    <title>Mind Mapping Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+        #mindmap {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-color: #f4f4f9;
+            border: 2px solid #ddd;
+            overflow: hidden;
+        }
+        canvas {
+            pointer-events: none; /* Prevent canvas from blocking node interaction */
+        }
+        .node {
+            position: absolute;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            cursor: move;
+            user-select: none;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+        .controls button,
+        .controls input {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="mindmap">
+        <canvas id="connections" width="2000" height="2000"></canvas>
+    </div>
+    <div class="controls">
+        <button id="saveBtn">Save</button>
+        <button id="loadBtn">Load</button>
+        <button id="exportBtn">Export</button>
+        <input type="file" id="importBtn" accept=".json">
+    </div>
+    <script src="script.js"></script>
+// Disable right-click
+    document.addEventListener("contextmenu", function(event) {
+      event.preventDefault();
+    });
+</body>
+</html>
