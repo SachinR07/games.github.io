@@ -5,100 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="mind mapping tools, best mind mapping tools, online mind mapping tools, digital mind mapping tools, open source mind mapping tools, free mind mapping tools, AI mind mapping tools, Google mind mapping tools, best free online mind mapping tools, mind mapping apps, mind mapping tools for Apple, mind mapping software for ADHD, Android mind mapping software, AI-powered mind mapping tools, web-based mind mapping tools, mind mapping tools for teaching, brainstorming and mind mapping tools, educational mind mapping tools, mind mapping tools for students, best mind mapping tools for iPad, best mind mapping tools for Mac, best mind mapping tools for education, free AI mind mapping tools, mind mapping software benefits, sketches and doodles for mind mapping, mind mapping tools in teaching aptitude, mind mapping software blog, best mind mapping tools Reddit, agricultural mind mapping tools">
     <title>Mind Mapping Tool</title>
-    <style>
-body {
-  font-family: sans-serif;
-}
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.node {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 10px;
-  cursor: pointer;
-}
-.node.selected {
-  border: 2px solid #007bff;
-}
-.node.parent {
-  background-color: #f0f0f0;
-}
-.node input[type="text"] {
-  width: 100%;
-  border: none;
-  outline: none;
-}
-</style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      color: #333;
+      margin: 20px 0;
+    }
+    #mindmap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      border: 2px dashed #007bff;
+      border-radius: 10px;
+      background-color: #ffffff;
+      max-width: 90%;
+      margin-bottom: 20px;
+    }
+    .node {
+      padding: 10px;
+      margin: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f1f1f1;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .node:hover {
+      transform: scale(1.05);
+      border-color: #007bff;
+    }
+    .node.selected {
+      border: 2px solid #007bff;
+      background-color: #e6f7ff;
+    }
+    .node.parent {
+      background-color: #d9f0ff;
+    }
+    .node input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      outline: none;
+    }
+    .node input[type="text"]:focus {
+      border-color: #007bff;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:active {
+      background-color: #003d80;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
   <h1>Mind Map Creator</h1>
   <div id="mindmap"></div>
   <button onclick="saveMindMap()">Save Mind Map</button>
-</div>
 
-<script>
-const mindmapContainer = document.getElementById('mindmap');
-let selectedNode = null;
+  <script>
+    const mindmapContainer = document.getElementById('mindmap');
+    let selectedNode = null;
 
-// Create the root node
-const rootNode = createNode('Root Node');
-mindmapContainer.appendChild(rootNode);
+    // Create the root node
+    const rootNode = createNode('Root Node');
+    mindmapContainer.appendChild(rootNode);
 
-// Function to create a new node
-function createNode(text) {
-  const node = document.createElement('div');
-  node.classList.add('node');
-  node.innerHTML = `
-    <input type="text" value="${text}">
-    <button onclick="addChildNode(this.parentNode)">Add Child</button>
-  `;
-  node.addEventListener('click', () => {
-    if (selectedNode) {
-      selectedNode.classList.remove('selected');
+    // Function to create a new node
+    function createNode(text) {
+      const node = document.createElement('div');
+      node.classList.add('node');
+      node.innerHTML = `
+        <input type="text" value="${text}" placeholder="Enter text...">
+        <button onclick="addChildNode(this.parentNode)">Add Child</button>
+      `;
+      node.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent parent nodes from being selected
+        if (selectedNode) {
+          selectedNode.classList.remove('selected');
+        }
+        selectedNode = node;
+        selectedNode.classList.add('selected');
+      });
+      return node;
     }
-    selectedNode = node;
-    selectedNode.classList.add('selected');
+
+    // Function to add a child node
+    function addChildNode(parentNode) {
+      const childNode = createNode('');
+      parentNode.classList.add('parent');
+      parentNode.appendChild(childNode);
+    }
+
+    // Function to save the mind map (you can implement your own saving logic here)
+    function saveMindMap() {
+      const mindmapData = serializeMindmap(rootNode);
+      localStorage.setItem('mindmapData', JSON.stringify(mindmapData));
+      alert('Mind map saved!');
+    }
+
+    // Helper function to serialize the mind map data (recursive)
+    function serializeMindmap(node) {
+      const data = {
+        text: node.querySelector('input').value,
+        children: []
+      };
+      const childNodes = node.querySelectorAll(':scope > .node');
+      childNodes.forEach(childNode => {
+        data.children.push(serializeMindmap(childNode));
+      });
+      return data;
+    }
+  </script>
+<script>
+  document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    alert('Right-click is disabled on this page.');
   });
-  return node;
-}
-
-// Function to add a child node
-function addChildNode(parentNode) {
-  const childNode = createNode('');
-  parentNode.classList.add('parent');
-  parentNode.appendChild(childNode);
-}
-
-// Function to save the mind map (you can implement your own saving logic here)
-function saveMindMap() {
-  // Serialize the mind map data (e.g., using JSON)
-  const mindmapData = serializeMindmap(rootNode); 
-
-  // Save the data (e.g., to local storage, a file, or a server)
-  localStorage.setItem('mindmapData', JSON.stringify(mindmapData)); 
-  alert('Mind map saved!');
-}
-
-// Helper function to serialize the mind map data (recursive)
-function serializeMindmap(node) {
-  const data = {
-    text: node.querySelector('input').value,
-    children: []
-  };
-
-  const childNodes = node.querySelectorAll('.node:not(.parent)');
-  childNodes.forEach(childNode => {
-    data.children.push(serializeMindmap(childNode));
-  });
-
-  return data;
-}
 </script>
-
 </body>
 </html>
