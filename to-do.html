@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="mind mapping tools, best mind mapping tools, online mind mapping tools, digital mind mapping tools, open source mind mapping tools, free mind mapping tools, AI mind mapping tools, Google mind mapping tools, best free online mind mapping tools, mind mapping apps, mind mapping tools for Apple, mind mapping software for ADHD, Android mind mapping software, AI-powered mind mapping tools, web-based mind mapping tools, mind mapping tools for teaching, brainstorming and mind mapping tools, educational mind mapping tools, mind mapping tools for students, best mind mapping tools for iPad, best mind mapping tools for Mac, best mind mapping tools for education, free AI mind mapping tools, mind mapping software benefits, sketches and doodles for mind mapping, mind mapping tools in teaching aptitude, mind mapping software blog, best mind mapping tools Reddit, agricultural mind mapping tools">
+    <title>Upcoming Events To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        #eventInput {
+            width: 70%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        #addEventBtn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #addEventBtn:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .editBtn, .deleteBtn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .editBtn {
+            background-color: #ffc107;
+            color: #fff;
+        }
+        .deleteBtn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .editBtn:hover {
+            background-color: #e0a800;
+        }
+        .deleteBtn:hover {
+            background-color: #c82333;
+        }
+        #clearAllBtn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        #clearAllBtn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upcoming Events To-Do List</h1>
+    <div style="text-align: center;">
+        <input type="text" id="eventInput" placeholder="Enter an event" />
+        <button id="addEventBtn">Add Event</button>
+    </div>
+    <ul id="eventList"></ul>
+    <button id="clearAllBtn">Clear All</button>
+
+    <script>
+        const eventInput = document.getElementById('eventInput');
+        const addEventBtn = document.getElementById('addEventBtn');
+        const eventList = document.getElementById('eventList');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+
+        // Load events from localStorage
+        const loadEvents = () => {
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            events.forEach(event => addEventToDOM(event));
+        };
+
+        // Save events to localStorage
+        const saveEvents = () => {
+            const events = [];
+            document.querySelectorAll('#eventList li span').forEach(event => {
+                events.push(event.textContent);
+            });
+            localStorage.setItem('events', JSON.stringify(events));
+        };
+
+        // Add event to DOM
+        const addEventToDOM = (eventText) => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = eventText;
+
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Edit';
+            editBtn.className = 'editBtn';
+            editBtn.onclick = () => editEvent(span);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'deleteBtn';
+            deleteBtn.onclick = () => deleteEvent(li);
+
+            li.appendChild(span);
+            li.appendChild(editBtn);
+            li.appendChild(deleteBtn);
+            eventList.appendChild(li);
+        };
+
+        // Add event
+        addEventBtn.addEventListener('click', () => {
+            const eventText = eventInput.value.trim();
+            if (eventText) {
+                addEventToDOM(eventText);
+                saveEvents();
+                eventInput.value = '';
+            }
+        });
+
+        // Edit event
+        const editEvent = (span) => {
+            const newText = prompt('Edit your event:', span.textContent);
+            if (newText !== null) {
+                span.textContent = newText.trim();
+                saveEvents();
+            }
+        };
+
+        // Delete event
+        const deleteEvent = (li) => {
+            li.remove();
+            saveEvents();
+        };
+
+        // Clear all events
+        clearAllBtn.addEventListener('click', () => {
+            eventList.innerHTML = '';
+            localStorage.removeItem('events');
+        });
+
+        // Initialize app
+        loadEvents();
+    </script>
+<script>
+  document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    alert('Right-click is disabled on this page.');
+  });
+</script>
+</body>
+</html>
