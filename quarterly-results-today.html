@@ -64,6 +64,7 @@
             const companyContainer = document.createElement('div');
             companyContainer.className = 'company-container';
 
+            // Display the companies in a 3x3 grid
             paginatedCompanies.forEach(company => {
                 const companyDiv = document.createElement('div');
                 companyDiv.className = 'company';
@@ -81,6 +82,14 @@
 
                 companyContainer.appendChild(companyDiv);
             });
+
+            // Check for blank grids (less than 9 companies on the last page)
+            const remainingSlots = itemsPerPage - paginatedCompanies.length;
+            for (let i = 0; i < remainingSlots; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'company';
+                companyContainer.appendChild(emptyDiv); // Add empty spaces
+            }
 
             container.appendChild(companyContainer);
             displayPagination();
