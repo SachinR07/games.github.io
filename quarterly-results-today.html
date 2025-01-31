@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nse results calendar,quarterly results today</title>
+    <title>NSE Results Calendar - Quarterly Results Today</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
         h1 { text-align: center; color: #444; }
         .company-title { margin: 10px 0; font-size: 18px; font-weight: bold; color: #333; }
-        .company-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
-        .company { width: 30%; border: 1px solid #ddd; padding: 10px; background: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        .company-container { display: flex; flex-direction: column; gap: 20px; }
+        .company { border: 1px solid #ddd; padding: 10px; background: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         th { background: #4CAF50; color: #fff; }
@@ -21,11 +21,11 @@
     </style>
 </head>
 <body>
-    <h1>nse results calendar,quarterly results today</h1>
+    <h1>NSE Results Calendar - Quarterly Results Today</h1>
     <div id="results"></div>
 
     <script>
-        const itemsPerPage = 9; // 9 companies per page (3x3)
+        const itemsPerPage = 10; // Updated to 10 companies per page
         let companies = [], currentPage = 1;
 
         async function loadResults() {
@@ -64,7 +64,7 @@
             const companyContainer = document.createElement('div');
             companyContainer.className = 'company-container';
 
-            // Display the companies in a 3x3 grid
+            // Display the companies in a vertical layout
             paginatedCompanies.forEach(company => {
                 const companyDiv = document.createElement('div');
                 companyDiv.className = 'company';
@@ -82,14 +82,6 @@
 
                 companyContainer.appendChild(companyDiv);
             });
-
-            // Check for blank grids (less than 9 companies on the last page)
-            const remainingSlots = itemsPerPage - paginatedCompanies.length;
-            for (let i = 0; i < remainingSlots; i++) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'company';
-                companyContainer.appendChild(emptyDiv); // Add empty spaces
-            }
 
             container.appendChild(companyContainer);
             displayPagination();
@@ -113,11 +105,11 @@
 
         loadResults();
     </script>
-<script>
-    // Disable right-click
-    document.addEventListener("contextmenu", function(event) {
-      event.preventDefault();
-    });
-  </script>
+    <script>
+        // Disable right-click
+        document.addEventListener("contextmenu", function(event) {
+            event.preventDefault();
+        });
+    </script>
 </body>
 </html>
