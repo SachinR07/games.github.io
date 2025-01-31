@@ -9,3 +9,9 @@ Q3 Results	Dec 24	Sep 24	Growth
 Revenue	12,801	12,686	0.91%
 Gross Profit	3,601	3,600	0.03%
 Net Profit	1,402	1,331	5%
+
+Sun Pharma
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	10,907	11,090	-1%
+Gross Profit	1,268	655	93%
+Net Profit	1,131	-450	351%
