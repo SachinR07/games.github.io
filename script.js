@@ -4,13 +4,22 @@ document.addEventListener("contextmenu", (e) => e.preventDefault());
 // LocalStorage management
 const taskList = document.getElementById("task-list");
 const addTaskButton = document.getElementById("add-task");
+const noTasksMessage = document.getElementById("no-tasks-message");
 
 // Retrieve tasks from localStorage
 const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 // Display tasks
 function renderTasks() {
-  taskList.innerHTML = "";
+  taskList.innerHTML = ""; // Clear the task list
+
+  if (tasks.length === 0) {
+    noTasksMessage.style.display = "block"; // Show the "No tasks" message if empty
+    return;
+  }
+
+  noTasksMessage.style.display = "none"; // Hide the "No tasks" message
+
   tasks.forEach((task, index) => {
     const taskDiv = document.createElement("div");
     taskDiv.textContent = task;
