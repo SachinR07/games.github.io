@@ -5,220 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="mind mapping tools, best mind mapping tools, online mind mapping tools, digital mind mapping tools, open source mind mapping tools, free mind mapping tools, AI mind mapping tools, Google mind mapping tools, best free online mind mapping tools, mind mapping apps, mind mapping tools for Apple, mind mapping software for ADHD, Android mind mapping software, AI-powered mind mapping tools, web-based mind mapping tools, mind mapping tools for teaching, brainstorming and mind mapping tools, educational mind mapping tools, mind mapping tools for students, best mind mapping tools for iPad, best mind mapping tools for Mac, best mind mapping tools for education, free AI mind mapping tools, mind mapping software benefits, sketches and doodles for mind mapping, mind mapping tools in teaching aptitude, mind mapping software blog, best mind mapping tools Reddit, agricultural mind mapping tools">
     <title>To-Do List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-        }
-        #eventInput, #eventDate {
-            padding: 10px;
-            font-size: 1rem;
-            margin-right: 10px;
-        }
-        #eventInput {
-            width: 40%;
-        }
-        #eventDate {
-            width: 30%;
-        }
-        #addEventBtn {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #addEventBtn:hover {
-            background-color: #0056b3;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            background: #fff;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .eventDetails {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .eventDate {
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .editBtn, .deleteBtn {
-            margin-left: 10px;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .editBtn {
-            background-color: #ffc107;
-            color: #fff;
-        }
-        .deleteBtn {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .editBtn:hover {
-            background-color: #e0a800;
-        }
-        .deleteBtn:hover {
-            background-color: #c82333;
-        }
-        #clearAllBtn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        #clearAllBtn:hover {
-            background-color: #5a6268;
-        }
-    </style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .add-task {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .add-task input, .add-task select {
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .add-task button {
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .add-task button:hover {
+      background-color: #0056b3;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .task-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .task-list li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .task-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .priority {
+      font-size: 0.8em;
+      color: #888;
+    }
+
+    .task-actions button {
+      padding: 5px 8px;
+      background-color: #ff4d4d;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    .task-actions button:hover {
+      background-color: #cc0000;
+    }
+  </style>
 </head>
-<body>
+<body oncontextmenu="return false;"> <!-- Disables right-click -->
+
+  <div class="container">
     <h1>To-Do List</h1>
-    <div style="text-align: center;">
-        <input type="text" id="eventInput" placeholder="Enter an event" />
-        <input type="date" id="eventDate" />
-        <button id="addEventBtn">Add Event</button>
+
+    <div class="add-task">
+      <input type="text" id="task-name" placeholder="Enter task..." />
+      <input type="date" id="task-date" />
+      <select id="task-priority">
+        <option value="Low">Low Priority</option>
+        <option value="Medium">Medium Priority</option>
+        <option value="High">High Priority</option>
+      </select>
+      <button onclick="addTask()">Add Task</button>
     </div>
-    <ul id="eventList"></ul>
-    <button id="clearAllBtn">Clear All</button>
 
-    <script>
-        const eventInput = document.getElementById('eventInput');
-        const eventDate = document.getElementById('eventDate');
-        const addEventBtn = document.getElementById('addEventBtn');
-        const eventList = document.getElementById('eventList');
-        const clearAllBtn = document.getElementById('clearAllBtn');
+    <ul class="task-list" id="task-list"></ul>
+  </div>
 
-        // Load events from localStorage
-        const loadEvents = () => {
-            const events = JSON.parse(localStorage.getItem('events')) || [];
-            events.forEach(event => addEventToDOM(event.text, event.date));
-        };
+  <script>
+    // Load tasks from localStorage on page load
+    window.onload = function () {
+      loadTasks();
+    };
 
-        // Save events to localStorage
-        const saveEvents = () => {
-            const events = [];
-            document.querySelectorAll('#eventList li').forEach(li => {
-                const text = li.querySelector('.eventText').textContent;
-                const date = li.querySelector('.eventDate').textContent;
-                events.push({ text, date });
-            });
-            localStorage.setItem('events', JSON.stringify(events));
-        };
+    // Disable right-click
+    document.addEventListener('contextmenu', (event) => event.preventDefault());
 
-        // Add event to DOM
-        const addEventToDOM = (eventText, eventDate) => {
-            const li = document.createElement('li');
+    function addTask() {
+      const taskName = document.getElementById("task-name").value.trim();
+      const taskDate = document.getElementById("task-date").value;
+      const taskPriority = document.getElementById("task-priority").value;
 
-            const eventDetails = document.createElement('div');
-            eventDetails.className = 'eventDetails';
+      if (!taskName || !taskDate) {
+        alert("Please enter a task and select a date.");
+        return;
+      }
 
-            const spanText = document.createElement('span');
-            spanText.textContent = eventText;
-            spanText.className = 'eventText';
+      const task = {
+        name: taskName,
+        date: taskDate,
+        priority: taskPriority,
+        completed: false,
+      };
 
-            const spanDate = document.createElement('span');
-            spanDate.textContent = eventDate;
-            spanDate.className = 'eventDate';
+      saveTask(task);
+      renderTasks();
+      clearInputs();
+    }
 
-            eventDetails.appendChild(spanText);
-            eventDetails.appendChild(spanDate);
+    function saveTask(task) {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.push(task);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
 
-            const editBtn = document.createElement('button');
-            editBtn.textContent = 'Edit';
-            editBtn.className = 'editBtn';
-            editBtn.onclick = () => editEvent(li);
+    function loadTasks() {
+      renderTasks();
+    }
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.className = 'deleteBtn';
-            deleteBtn.onclick = () => deleteEvent(li);
+    function renderTasks() {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      const taskList = document.getElementById("task-list");
+      taskList.innerHTML = "";
 
-            li.appendChild(eventDetails);
-            li.appendChild(editBtn);
-            li.appendChild(deleteBtn);
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = task.completed ? "completed" : "";
 
-            eventList.appendChild(li);
-        };
+        const taskDetails = document.createElement("div");
+        taskDetails.className = "task-details";
+        taskDetails.innerHTML = `
+          <span>${task.name}</span>
+          <span class="priority">${task.date} - ${task.priority} Priority</span>
+        `;
 
-        // Add event
-        addEventBtn.addEventListener('click', () => {
-            const eventText = eventInput.value.trim();
-            const eventDateValue = eventDate.value;
+        const taskActions = document.createElement("div");
+        taskActions.className = "task-actions";
 
-            if (eventText && eventDateValue) {
-                addEventToDOM(eventText, eventDateValue);
-                saveEvents();
-                eventInput.value = '';
-                eventDate.value = '';
-            } else {
-                alert('Please enter both an event and a date!');
-            }
-        });
+        const completeButton = document.createElement("button");
+        completeButton.textContent = task.completed ? "Undo" : "Completed";
+        completeButton.onclick = () => toggleTaskCompletion(index);
 
-        // Edit event
-        const editEvent = (li) => {
-            const text = li.querySelector('.eventText').textContent;
-            const date = li.querySelector('.eventDate').textContent;
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = () => deleteTask(index);
 
-            const newText = prompt('Edit your event:', text);
-            const newDate = prompt('Edit the date (YYYY-MM-DD):', date);
+        taskActions.appendChild(completeButton);
+        taskActions.appendChild(deleteButton);
 
-            if (newText && newDate) {
-                li.querySelector('.eventText').textContent = newText;
-                li.querySelector('.eventDate').textContent = newDate;
-                saveEvents();
-            }
-        };
+        li.appendChild(taskDetails);
+        li.appendChild(taskActions);
 
-        // Delete event
-        const deleteEvent = (li) => {
-            li.remove();
-            saveEvents();
-        };
+        taskList.appendChild(li);
+      });
+    }
 
-        // Clear all events
-        clearAllBtn.addEventListener('click', () => {
-            eventList.innerHTML = '';
-            localStorage.removeItem('events');
-        });
+    function toggleTaskCompletion(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks"));
+      tasks[index].completed = !tasks[index].completed;
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
 
-        // Initialize app
-        loadEvents();
-    </script>
-    <script>
-  document.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-    alert('Right-click is disabled on this page.');
-  });
-</script>
+    function deleteTask(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks"));
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function clearInputs() {
+      document.getElementById("task-name").value = "";
+      document.getElementById("task-date").value = "";
+      document.getElementById("task-priority").value = "Low";
+    }
+  </script>
 </body>
 </html>
