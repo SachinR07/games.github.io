@@ -1,3 +1,21 @@
+ONGC
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	166,097	158,329	4%
+Gross Profit	15,146	12,298	23%
+Net Profit	10,148	9,891	2%
+
+Vedanta
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	39,115	37,634	3%
+Gross Profit	8,423	7,132	18%
+Net Profit	4,876	5,603	-12%
+
+PNB
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	31,895	30,447	4%
+Gross Profit	6,652	7,009	-5%
+Net Profit	4,649	4,432	4%
+
 UPL
 Q3 Results	Dec 24	Sep 24	Growth
 Revenue	10,907	11,090	-1%
