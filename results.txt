@@ -15,3 +15,21 @@ Q3 Results	Dec 24	Sep 24	Growth
 Revenue	10,907	11,090	-1%
 Gross Profit	1,268	655	93%
 Net Profit	1,131	-450	351%
+
+Marico
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	1,965	1,860	5%
+Gross Profit	335	317	5%
+Net Profit	376	529	-28%
+
+Bandhan Bank
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	5,479	5,500	-0.38%
+Gross Profit	2,021	1,855	8%
+Net Profit	426	937	-54%
+
+Poonawalla Fin
+Q3 Results	Dec 24	Sep 24	Growth
+Revenue	1,057	989	6%
+Gross Profit	410	-286	243%
+Net Profit	19	-471	104%
