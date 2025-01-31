@@ -80,24 +80,28 @@
         }
 
         function parseData(data) {
-            const lines = data.trim().split('\n');
-            let currentCompany = null;
+    const lines = data.trim().split('\n');
+    companies = [];
+    let currentCompany = null;
 
-            lines.forEach(line => {
-                if (!line.includes('\t')) {
-                    // New company section
-                    if (currentCompany) companies.push(currentCompany);
-                    currentCompany = { name: line.trim(), headers: [], rows: [] };
-                } else if (currentCompany.headers.length === 0) {
-                    // Headers row
-                    currentCompany.headers = line.trim().split('\t');
-                } else {
-                    // Data row
-                    currentCompany.rows.push(line.trim().split('\t'));
-                }
-            });
-            if (currentCompany) companies.push(currentCompany);
+    lines.forEach(line => {
+        if (!line.includes('\t')) {
+            // New company section
+            if (currentCompany) companies.push(currentCompany); // Add the previous company to the list
+            currentCompany = { name: line.trim(), headers: [], rows: [] };
+        } else if (currentCompany && currentCompany.headers.length === 0) {
+            // Headers row
+            currentCompany.headers = line.trim().split('\t');
+        } else if (currentCompany) {
+            // Data row
+            currentCompany.rows.push(line.trim().split('\t'));
         }
+    });
+
+    // Add the last company to the list
+    if (currentCompany) companies.push(currentCompany);
+}
+
 
         function paginateData(companies, page) {
             const start = (page - 1) * itemsPerPage;
