@@ -7,9 +7,11 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
         h1 { text-align: center; color: #444; }
-        .company-title { margin: 20px 0 10px; font-size: 20px; font-weight: bold; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .company-title { margin: 10px 0; font-size: 18px; font-weight: bold; color: #333; }
+        .company-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
+        .company { width: 30%; border: 1px solid #ddd; padding: 10px; background: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         th { background: #4CAF50; color: #fff; }
         tr:nth-child(even) { background: #f2f2f2; }
         #pagination { text-align: center; margin: 20px 0; }
@@ -23,7 +25,7 @@
     <div id="results"></div>
 
     <script>
-        const itemsPerPage = 5; // Companies per page
+        const itemsPerPage = 9; // 9 companies per page (3x3)
         let companies = [], currentPage = 1;
 
         async function loadResults() {
@@ -54,23 +56,33 @@
             const container = document.getElementById('results');
             container.innerHTML = '';
 
+            // Pagination: Get the companies for the current page
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const paginatedCompanies = companies.slice(start, end);
 
+            const companyContainer = document.createElement('div');
+            companyContainer.className = 'company-container';
+
             paginatedCompanies.forEach(company => {
+                const companyDiv = document.createElement('div');
+                companyDiv.className = 'company';
+
                 const title = document.createElement('div');
                 title.className = 'company-title';
                 title.textContent = company.name;
-                container.appendChild(title);
+                companyDiv.appendChild(title);
 
                 const table = document.createElement('table');
                 const headers = company.headers.map(header => `<th>${header}</th>`).join('');
                 table.innerHTML = `<tr>${headers}</tr>` + company.rows.map(row =>
                     `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
-                container.appendChild(table);
+                companyDiv.appendChild(table);
+
+                companyContainer.appendChild(companyDiv);
             });
 
+            container.appendChild(companyContainer);
             displayPagination();
         }
 
@@ -92,7 +104,7 @@
 
         loadResults();
     </script>
- <script>
+<script>
     // Disable right-click
     document.addEventListener("contextmenu", function(event) {
       event.preventDefault();
